@@ -54,6 +54,8 @@ If you data are stored somewhere else, you need to set `ZOTERO_DIR` in the [work
 <a name="citation-styles"></a>
 ### Citation styles ###
 
+The workflow uses the CSL styles you have installed in Zotero, so to add a new style, simply add it in Zotero. The workflow will pick up the new style(s) on the next run.
+
 To quickly copy citations using `⌘↩` and `⌥↩`, you must first assign citation styles to them. To do this, hit `^↩` on an entry to show all available styles, then use `⌘↩` or `⌥↩` on a style to set that as the default for that key combo.
 
 
@@ -78,7 +80,7 @@ Licence & thanks
 
 This workflow is released under the [MIT licence][licence].
 
-The Zorro icon was created by dan lowenstein from the Noun Project.
+The [Zorro icon][icon-source] was created by [Dan Lowenstein][lowenstein] from [the Noun Project][noun-project].
 
 It is heavily based on the [citeproc][citeproc] ([BSD][citeproc-licence]) and [Alfred-Workflow][aw] (also MIT) libraries.
 
@@ -87,4 +89,7 @@ It is heavily based on the [citeproc][citeproc] ([BSD][citeproc-licence]) and [A
 [citeproc]: https://pypi.python.org/pypi/citeproc-py/
 [citeproc-licence]: https://github.com/brechtm/citeproc-py/blob/master/LICENSE
 [conf-sheet]: https://www.alfredapp.com/help/workflows/advanced/variables/#environment
+[icon-source]: https://thenounproject.com/term/zorro/14540/
+[lowenstein]: https://thenounproject.com/danny_mustache
 [licence]: ./LICENCE
+[noun-project]: https://thenounproject.com
