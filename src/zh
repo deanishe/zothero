@@ -1,0 +1,309 @@
+#!/usr/bin/python
+# encoding: utf-8
+#
+# Copyright (c) 2017 Dean Jackson <deanishe@deanishe.net>
+#
+# MIT Licence. See http://opensource.org/licenses/MIT
+#
+# Created on 2017-12-15
+#
+
+"""zh [options] [<query>]
+
+ZotHero - Alfred workflow for Zotero.
+
+Usage:
+    zh search <query>
+    zh fields [<query>]
+    zh attachments <key> [<query>]
+    zh citations <key> [<query>]
+    zh copy <style> <key>
+    zh --help
+
+Options:
+    -k <key>, --key=<key>         Key of the entry to generate citations
+                                  for.
+    -h, --help                    Show this message and exit.
+
+"""
+
+from __future__ import print_function, absolute_import
+
+import os
+from operator import attrgetter
+import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'lib'))
+
+from docopt import docopt
+from workflow import Workflow3, ICON_WARNING, ICON_WEB
+
+
+log = None
+
+# Citation formats for CMD and OPT
+CITE_FORMAT_CMD = os.getenv('CITE_CMD')
+CITE_FORMAT_OPT = os.getenv('CITE_OPT')
+
+
+def do_fields(query):
+    """View/filter available search fields."""
+    from zothero.index import COLUMNS as cols
+    if query:  # remove columns that don't start with `query`
+        query = query.lower()
+        cols = [col for col in cols if col.startswith(query)]
+
+    for col in cols:
+        wf.add_item(col.title(),
+                    'Search in "{}"'.format(col),
+                    arg=col + ':',
+                    valid=True,
+                    uid=col)
+
+    wf.warn_empty('No matching columns', 'Try a different query?')
+    wf.send_feedback()
+
+
+def do_search(query):
+    """Search the Zotero database."""
+    from zothero import app
+    from zothero.formatting import EntryFormatter
+    from zothero.icons import entry_icon
+    from zothero.index import COLUMNS
+
+    style_cmd = style_opt = None
+    if CITE_FORMAT_CMD:
+        style_cmd = app.styles.get(CITE_FORMAT_CMD)
+        log.debug(u'CMD style: %s', style_cmd.name)
+
+    if CITE_FORMAT_OPT:
+        style_opt = app.styles.get(CITE_FORMAT_OPT)
+        log.debug(u'OPT style: %s', style_opt.name)
+
+    # Get entries matching query
+    entries = app.search(query)
+
+    # ------------------------------------------------------------------
+    # If no entries, show "Search XYZ" message or "no results" warning
+    if not entries:
+        if query.endswith(':'):  # probably a category...
+            col = query[:-1]
+            if col in COLUMNS:
+                wf.add_item(u'Search "{}"…'.format(col.title()))
+
+        # Message wasn't added; show warning
+        wf.warn_empty('No matches found', 'Try a different query?')
+
+    # ------------------------------------------------------------------
+    # Create and send Alfred feedback
+    for i, e in enumerate(entries):
+        log.debug(u'%4d. %s', i + 1, e)
+        f = EntryFormatter(e)
+        sub = u'{} {}'.format(f.creators, f.year)
+        if e.attachments:
+            sub += u' Attachments: ' + str(len(e.attachments))
+
+        if e.notes:
+            large = u'\n\n'.join(e.notes)
+        else:
+            large = e.title or u'xxx'
+
+        it = wf.add_item(e.title or u'xxx',
+                         sub,
+                         uid=e.key,
+                         arg=e.key,
+                         icon=entry_icon(e),
+                         largetext=large,
+                         valid=True)
+
+        it.setvar('action', 'open-in-zotero')
+        it.setvar('key', e.key)
+        it.setvar('library', e.library)
+
+        # ------------------------------------------------------------------
+        # Citations
+        if style_cmd:
+            mod = it.add_modifier('cmd',
+                                  u'Copy citation: ' + style_cmd.name)
+            mod.setvar('action', 'copy-cite')
+            mod.setvar('style', style_cmd.key)
+            # For notification
+            mod.setvar('stylename', style_cmd.name)
+        else:
+            it.add_modifier('cmd', u'No citation format set', valid=False)
+
+        if style_opt:
+            mod = it.add_modifier('alt',
+                                  u'Copy citation: ' + style_opt.name)
+            mod.setvar('action', 'copy-cite')
+            mod.setvar('style', style_opt.key)
+            # For notification
+            mod.setvar('stylename', style_opt.name)
+        else:
+            it.add_modifier('alt', u'No citation format set', valid=False)
+
+        # All citation formats
+        mod = it.add_modifier('ctrl', 'View all citation formats')
+        mod.setvar('action', 'show-citations')
+
+        # ------------------------------------------------------------------
+        # Attachments
+        if e.attachments:
+            mod = it.add_modifier('shift', 'View attachments')
+            mod.setvar('action', 'show-attachments')
+
+    wf.send_feedback()
+
+
+def do_attachments(key, query):
+    """Filter and open an entry's attachments."""
+    from zothero import app
+    e = app.entry(key)
+    if not e:
+        wf.add_item('Unknown Entry', 'Entry was not found', icon=ICON_WARNING)
+        wf.send_feedback()
+        return
+
+    if not e.attachments:
+        wf.add_item('No Attachments', 'Entry has no attachments',
+                    icon=ICON_WARNING)
+        wf.send_feedback()
+        return
+
+    atts = e.attachments[:]
+    if query:
+        atts = wf.filter(query, atts, attrgetter('name'))
+
+    for att in atts:
+        if att.path:
+            wf.add_item(att.name, att.path,
+                        arg=att.path,
+                        icon=att.path,
+                        type='file',
+                        icontype='fileicon',
+                        valid=True)
+        elif att.url:
+            wf.add_item(att.name, att.url,
+                        arg=att.url,
+                        icon=ICON_WEB,
+                        valid=True)
+
+    wf.warn_empty('No Matching Attachments', 'Try a different query?')
+    wf.send_feedback()
+
+
+def do_citations(entry_key, query):
+    """Filter citation formats."""
+    from zothero import app
+
+    # Get entry and styles
+    e = app.entry(entry_key)
+    if not e:
+        raise ValueError('Unknown entry: ' + entry_key)
+
+    styles = app.styles.all()
+
+    # Filter styles
+    if query:
+        styles = wf.filter(query, styles, key=attrgetter('name'),
+                           min_score=30)
+
+    # Generate feedback
+    for s in styles:
+        it = wf.add_item(
+            s.name,
+            u'Copy citation for "{}"'.format(e.title),
+            arg=s.key,
+            valid=True,
+        )
+        it.setvar('key', entry_key)
+        it.setvar('action', 'copy-cite')
+        it.setvar('style', s.key)
+
+        if s.key != CITE_FORMAT_CMD:
+            mod = it.add_modifier('cmd', u'Set as default format for ⌘↩')
+            mod.setvar('varname', 'CITE_CMD')
+            mod.setvar('varval', s.key)
+            mod.setvar('action', 'set-default')
+            # For notification
+            mod.setvar('modkey', u'⌘↩')
+            mod.setvar('stylename', s.name)
+
+        if s.key != CITE_FORMAT_OPT:
+            mod = it.add_modifier('alt', u'Set as default format for ⌥↩')
+            mod.setvar('varname', 'CITE_OPT')
+            mod.setvar('varval', s.key)
+            mod.setvar('action', 'set-default')
+            # For notification
+            mod.setvar('modkey', u'⌥↩')
+            mod.setvar('stylename', s.name)
+
+    wf.warn_empty('No Matching Styles', 'Try a different query?')
+    wf.send_feedback()
+
+
+def do_copy(style_key, entry_key):
+    """Copy a citation to the pasteboard."""
+    from zothero import app
+    import pasteboard as pb
+
+    wf.text_errors = True
+
+    e = app.entry(entry_key)
+    s = app.style(style_key)
+
+    # log.debug('entry=%r', e)
+    # log.debug('style=%r', s)
+
+    if not e:
+        raise ValueError('Unknown Entry: ' + entry_key)
+
+    if not s:
+        raise ValueError('Unknown Style: ' + style_key)
+
+    data = app.styles.cite(e, s)
+    pbdata = {
+        pb.UTI_HTML: data['html'],
+        pb.UTI_PLAIN: data['text'],
+        pb.UTI_TEXT: data['rtf'],
+    }
+    pb.set(pbdata)
+
+
+def main(wf):
+    """Run workflow."""
+    import zothero
+
+    wf.args  # call to ensure any magic arguments are intercepted
+    args = docopt(__doc__)
+    query = wf.decode(args.get('<query>') or '')
+    log.debug('args=%r', args)
+
+    app = zothero.ZotHero(wf.cachedir)
+    # Store app and Workflow3 in `zothero` package where everything
+    # can access them.
+    zothero.app = app
+    zothero.wf = wf
+
+    if args['search']:
+        return do_search(query)
+
+    if args['fields']:
+        return do_fields(query)
+
+    if args['attachments']:
+        return do_attachments(args['<key>'], query)
+
+    if args['citations']:
+        return do_citations(args['<key>'], query)
+
+    if args['copy']:
+        return do_copy(args['<style>'], args['<key>'])
+
+    raise ValueError('Unknown command')
+
+
+if __name__ == '__main__':
+    wf = Workflow3()
+    log = wf.logger
+    wf.run(main)
