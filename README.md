@@ -80,9 +80,10 @@ Licence & thanks
 
 This workflow is released under the [MIT licence][licence].
 
+It is heavily based on the [citeproc][citeproc] ([BSD][citeproc-licence]) and [Alfred-Workflow][aw] (also MIT) libraries.
+
 The [Zorro icon][icon-source] was created by [Dan Lowenstein][lowenstein] from [the Noun Project][noun-project].
 
-It is heavily based on the [citeproc][citeproc] ([BSD][citeproc-licence]) and [Alfred-Workflow][aw] (also MIT) libraries.
 
 
 [aw]: http://www.deanishe.net/alfred-workflow/
