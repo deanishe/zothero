@@ -16,7 +16,7 @@ import json
 import logging
 import os
 
-from .util import json_serialise, utf8encode, parse_date
+from .util import json_serialise, utf8encode
 
 
 log = logging.getLogger(__name__)
@@ -71,9 +71,9 @@ class Entry(AttrDict):
         id (int): Database ID for Entry
         key (unicode): The unique identifier for this Entry
         title (unicode): The title of the Entry
-        date (datetime.date): Publication date. May be `None` if entry
-            has no or an incomplete publication date. The raw date string
-            from Zotero is stored in ``zdata['date']``.
+        date (unicode): Publication date in YYYY-MM-DD, YYYY-MM or YYYY
+            format. The raw date string from Zotero is stored in
+            ``zdata['date']``.
         year (int): The year Entry was published
         modified (datetime.datetime): Time when Entry was last modified.
         library (int): Which library the Entry belongs to
@@ -92,8 +92,6 @@ class Entry(AttrDict):
     def from_json(cls, js):
         """Deserialise an `Entry` from JSON."""
         data = json.loads(js)
-        if data.get('date'):
-            data['date'] = parse_date(data['date'])
 
         e = Entry(data)
 

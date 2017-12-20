@@ -160,7 +160,7 @@ def utf8encode(s):
 
 
 def parse_date(datestr):
-    """Parse a Zotero date into a `date`.
+    """Parse a Zotero date into YYYY-MM-DD, YYYY-MM or YYYY format.
 
     Zotero dates are in the format "YYYY-MM-DD <in words>",
     where <in words> may be the year, month and year or full
@@ -170,14 +170,16 @@ def parse_date(datestr):
         datestr (str): Date from Zotero database
 
     Returns:
-        datetime.date: Parsed date if ``datestr`` is a valid date, else
-            ``None``
+        unicode: Parsed date if ``datestr``.
     """
+    if not datestr:
+        return None
+
     m = match_date(datestr)
     if not m:
-        return None
+        return datestr[:4]  # YYYY
     try:
-        return date(*[int(s) for s in m.groups()])
+        return u'-'.join(m.groups())
     except ValueError:
         return None
 

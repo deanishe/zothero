@@ -145,9 +145,9 @@ def parse_date(datestr):
     Returns:
         dict: ``date-parts`` dict for CSL JSON.
     """
-    dt = util.parse_date(datestr)
-    if dt:
-        parts = [int(s) for s in dt.strftime('%Y-%m-%d').split('-')]
+    parsed = util.parse_date(datestr)
+    if parsed:
+        parts = [int(s) for s in parsed.split('-')]
     else:
         parts = [int(datestr[:4])]
 
