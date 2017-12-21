@@ -34,6 +34,12 @@ Usage
         - `⌥↩` — Set style as default for `⌥↩`.
 - `zot:[<query>]` — Search a specific field.
     - `↩` — Select a field to search against.
+- `zotconf [<query>]` — View and edit workflow configuration.
+    - `An Update is Available` / `Workflow is Up To Date` — Whether a newer version of the workflow is available.
+    - `⌘↩ Style: …` and `⌥↩ Style: …` — Choose citation styles set for the `⌘↩` and `⌥↩` hotkeys (on search results).
+    - `Reload Zotero Cache` — Clear the workflow's cache of Zotero data. Useful if the workflow gets out of sync with Zotero.
+    - `View Documentation` — Open this README in your browser.
+    - `Report an Issue` — Open the GitHub issue tracker in your browser.
 
 
 <a name="configuration"></a>
@@ -49,6 +55,8 @@ The workflow partly manages its own configuration, but you may need to use the [
 The workflow uses your Zotero database and styles, therefore it needs to know where to find them. By default, the workflow looks in `~/Zotero` (the default location for Zotero 5).
 
 If you data are stored somewhere else, you need to set `ZOTERO_DIR` in the [workflow configuration sheet][conf-sheet].
+
+If you have set a "Linked Attachment Base Directory" in Zotero, enter its path for `ATTACHMENTS_DIR` in the [configuration sheet][conf-sheet].
 
 
 <a name="citation-styles"></a>
@@ -67,11 +75,12 @@ Theses are all settings available in the [workflow configuration sheet][conf-she
 You probably shouldn't edit the `CITE_*` variables yourself, as they need to be set to the internal ID of the style. Set them using the method described [above](#citation-styles).
 
 
-|   Variable   |            Meaning            |
-|--------------|-------------------------------|
-| `CITE_CMD`   | Citation style copied by `⌘↩` |
-| `CITE_OPT`   | Citation style copied by `⌘⌥` |
-| `ZOTERO_DIR` | Path to your Zotero data.     |
+|      Variable     |             Meaning              |
+|-------------------|----------------------------------|
+| `ATTACHMENTS_DIR` | Path to your Zotero attachments. |
+| `CITE_CMD`        | Citation style copied by `⌘↩`    |
+| `CITE_OPT`        | Citation style copied by `⌘⌥`    |
+| `ZOTERO_DIR`      | Path to your Zotero data.        |
 
 
 <a name="licence--thanks"></a>

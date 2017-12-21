@@ -18,11 +18,13 @@ Usage:
     zh attachments <key> [<query>]
     zh citations <key> [<query>]
     zh copy <style> <key>
+    zh config [<query>]
+    zh select [--style <key>] [<query>]
+    zh clear
     zh --help
 
 Options:
-    -k <key>, --key=<key>         Key of the entry to generate citations
-                                  for.
+    -s <key>, --style=<key>       The currently-selected style.
     -h, --help                    Show this message and exit.
 
 """
@@ -41,9 +43,30 @@ from workflow import Workflow3, ICON_WARNING, ICON_WEB
 
 log = None
 
-# Citation formats for CMD and OPT
-CITE_FORMAT_CMD = os.getenv('CITE_CMD')
-CITE_FORMAT_OPT = os.getenv('CITE_OPT')
+# Citation styles for CMD and OPT
+CITE_STYLE_CMD = os.getenv('CITE_CMD')
+CITE_STYLE_OPT = os.getenv('CITE_OPT')
+VERSION = os.getenv('alfred_workflow_version') or ''
+
+# GitHub repo to check for updates
+UPDATE_SETTINGS = {
+    'github_slug': 'deanishe/zothero',
+    'prereleases': '-beta' in VERSION,
+}
+
+# URLs for help & docs
+URL_ISSUES = 'https://github.com/deanishe/zothero/issues'
+URL_DOCS = 'https://github.com/deanishe/zothero/blob/master/README.md'
+
+# Workflow icons
+ICON_ON = 'icons/on.png'
+ICON_OFF = 'icons/off.png'
+ICON_RELOAD = 'icons/reload.png'
+ICON_UPDATE_AVAILABLE = 'icons/update-available.png'
+ICON_UPDATE_OK = 'icons/update-ok.png'
+ICON_HELP = 'icons/help.png'
+ICON_DOCS = 'icons/docs.png'
+ICON_ISSUE = 'icons/issue.png'
 
 
 def do_fields(query):
@@ -72,12 +95,12 @@ def do_search(query):
     from zothero.index import COLUMNS
 
     style_cmd = style_opt = None
-    if CITE_FORMAT_CMD:
-        style_cmd = app.styles.get(CITE_FORMAT_CMD)
+    if CITE_STYLE_CMD:
+        style_cmd = app.styles.get(CITE_STYLE_CMD)
         log.debug(u'CMD style: %s', style_cmd.name)
 
-    if CITE_FORMAT_OPT:
-        style_opt = app.styles.get(CITE_FORMAT_OPT)
+    if CITE_STYLE_OPT:
+        style_opt = app.styles.get(CITE_STYLE_OPT)
         log.debug(u'OPT style: %s', style_opt.name)
 
     # Get entries matching query
@@ -192,7 +215,7 @@ def do_attachments(key, query):
     wf.send_feedback()
 
 
-def do_citations(entry_key, query):
+def do_citations(query, entry_key):
     """Filter citation formats."""
     from zothero import app
 
@@ -220,20 +243,22 @@ def do_citations(entry_key, query):
         it.setvar('action', 'copy-cite')
         it.setvar('style', s.key)
 
-        if s.key != CITE_FORMAT_CMD:
+        if s.key != CITE_STYLE_CMD:
             mod = it.add_modifier('cmd', u'Set as default format for ⌘↩')
             mod.setvar('varname', 'CITE_CMD')
             mod.setvar('varval', s.key)
             mod.setvar('action', 'set-default')
+            mod.setvar('next', 'citations')
             # For notification
             mod.setvar('modkey', u'⌘↩')
             mod.setvar('stylename', s.name)
 
-        if s.key != CITE_FORMAT_OPT:
+        if s.key != CITE_STYLE_OPT:
             mod = it.add_modifier('alt', u'Set as default format for ⌥↩')
             mod.setvar('varname', 'CITE_OPT')
             mod.setvar('varval', s.key)
             mod.setvar('action', 'set-default')
+            mod.setvar('next', 'citations')
             # For notification
             mod.setvar('modkey', u'⌥↩')
             mod.setvar('stylename', s.name)
@@ -270,6 +295,165 @@ def do_copy(style_key, entry_key):
     pb.set(pbdata)
 
 
+def do_config(query):
+    """Show workflow options."""
+    from zothero import app
+
+    style_cmd = style_opt = None
+    if CITE_STYLE_CMD:
+        style_cmd = app.styles.get(CITE_STYLE_CMD)
+        log.debug(u'CMD style: %s', style_cmd.name)
+
+    if CITE_STYLE_OPT:
+        style_opt = app.styles.get(CITE_STYLE_OPT)
+        log.debug(u'OPT style: %s', style_opt.name)
+
+    items = []  # (item params, variables) tuples
+    if wf.update_available:
+        items.append((dict(
+            title='An Update is Available',
+            subtitle=u'↩ or ⇥ to install',
+            autocomplete='workflow:update',
+            valid=False,
+            icon=ICON_UPDATE_AVAILABLE,
+        ), {}))
+
+    else:
+        items.append((dict(
+            title='Workflow is Up To Date',
+            subtitle=u'↩ or ⇥ to force update check',
+            autocomplete='workflow:update',
+            valid=False,
+            icon=ICON_UPDATE_OK,
+        ), {}))
+
+    # Styles
+    icon = ICON_OFF
+    name = 'None'
+    key = ''
+    if style_cmd:
+        icon = ICON_ON
+        name = style_cmd.name
+        key = style_cmd.key
+
+    items.append((dict(
+        title=u'⌘↩ Style: ' + name,
+        subtitle=u'↩ to change style',
+        valid=True,
+        icon=icon,
+    ), dict(
+        action='choose-style',
+        varname='CITE_CMD',
+        modkey=u'⌘↩',
+        style=key,
+    )))
+
+    icon = ICON_OFF
+    name = 'None'
+    key = ''
+    if style_opt:
+        icon = ICON_ON
+        name = style_opt.name
+        key = style_opt.key
+
+    items.append((dict(
+        title=u'⌥↩ Style: ' + name,
+        subtitle=u'↩ to change style',
+        valid=True,
+        icon=icon,
+    ), dict(
+        action='choose-style',
+        varname='CITE_OPT',
+        modkey=u'⌥↩',
+        style=key,
+    )))
+
+    items.append((dict(
+        title='Reload Zotero Data',
+        subtitle='Re-read your Zotero database',
+        icon=ICON_RELOAD,
+        valid=True,
+    ), dict(
+        action='reload',
+    )))
+
+    items.append((dict(
+        title='View Documentation',
+        subtitle='Open the documentation in your browser',
+        icon=ICON_DOCS,
+        arg=URL_DOCS,
+        valid=True,
+    ), dict(
+        action='open-url',
+        url=URL_DOCS,
+    )))
+
+    items.append((dict(
+        title='Report an Issue',
+        subtitle='Open GitHub issue tracker in your browser',
+        icon=ICON_ISSUE,
+        arg=URL_ISSUES,
+        valid=True,
+    ), dict(
+        action='open-url',
+        url=URL_ISSUES,
+    )))
+
+    # ------------------------------------------------------------------
+    # Filter and display items
+    if query:
+        items = wf.filter(query, items, key=lambda t: t[0]['title'],
+                          min_score=30)
+
+    for kwargs, variables in items:
+        it = wf.add_item(**kwargs)
+        for k, v in variables.items():
+            it.setvar(k, v)
+
+    wf.warn_empty('No Matching Options', 'Try a different query?')
+    wf.send_feedback()
+
+
+def do_select(query, style_key):
+    """Choose a default style."""
+    from zothero import app
+
+    styles = app.styles.all()
+    modkey = wf.decode(os.getenv('modkey') or '')
+
+    # Filter styles
+    if query:
+        styles = wf.filter(query, styles, key=attrgetter('name'),
+                           min_score=30)
+
+    for s in styles:
+        icon = ICON_OFF
+        valid = True
+        sub = u'↩ to set this style for ' + modkey
+        if s.key == style_key:
+            icon = ICON_ON
+            valid = False
+            sub = u'Style already assigned to ' + modkey
+
+        it = wf.add_item(s.name,
+                         sub,
+                         valid=valid,
+                         icon=icon)
+        it.setvar('varval', s.key)
+        it.setvar('stylename', s.name)
+        # Alfred doesn't notice changes fast enough, so turn this off
+        # for the time being
+        # it.setvar('next', 'config')
+
+    wf.warn_empty('No Matching Styles', 'Try a different query?')
+    wf.send_feedback()
+
+
+def do_clear():
+    """Remove cached data."""
+    wf.clear_cache(lambda fn: fn.endswith('.sqlite'))
+
+
 def main(wf):
     """Run workflow."""
     import zothero
@@ -279,31 +463,51 @@ def main(wf):
     query = wf.decode(args.get('<query>') or '')
     log.debug('args=%r', args)
 
-    app = zothero.ZotHero(wf.cachedir)
+    # Zotero data directories
+    datadir = os.getenv('ZOTERO_DIR') or None
+    attachdir = os.getenv('ATTACHMENTS_DIR') or None
+    if datadir:
+        datadir = wf.decode(datadir)
+    if attachdir:
+        attachdir = wf.decode(attachdir)
+
+    app = zothero.ZotHero(wf.cachedir, datadir, attachdir)
     # Store app and Workflow3 in `zothero` package where everything
     # can access them.
     zothero.app = app
     zothero.wf = wf
 
-    if args['search']:
-        return do_search(query)
-
-    if args['fields']:
-        return do_fields(query)
-
     if args['attachments']:
         return do_attachments(args['<key>'], query)
 
     if args['citations']:
-        return do_citations(args['<key>'], query)
+        return do_citations(query, args['<key>'])
+
+    if args['clear']:
+        return do_clear()
+
+    if args['config']:
+        return do_config(args['<query>'])
 
     if args['copy']:
         return do_copy(args['<style>'], args['<key>'])
+
+    if args['fields']:
+        return do_fields(query)
+
+    if args['search']:
+        return do_search(query)
+
+    if args['select']:
+        return do_select(query, args['--style'])
 
     raise ValueError('Unknown command')
 
 
 if __name__ == '__main__':
-    wf = Workflow3()
+    wf = Workflow3(
+        update_settings=UPDATE_SETTINGS,
+        help_url=URL_ISSUES,
+    )
     log = wf.logger
     wf.run(main)

@@ -17,7 +17,7 @@ import os
 from .util import copyifnewer, unicodify, shortpath
 
 # Default location of Zotero's data in version 5
-DEFAULT_ZOTERO_DIR = '~/Zotero'
+DEFAULT_ZOTERO_DIR = u'~/Zotero'
 
 log = logging.getLogger(__name__)
 
@@ -30,9 +30,8 @@ class ZotHero(object):
             workflow.
     """
 
-    def __init__(self, cachedir):
+    def __init__(self, cachedir, zot_data_dir=None, zot_attachments_dir=None):
         """Create new `ZotHero` using ``cachedir``."""
-        log.debug('[core] cachedir=%r', shortpath(cachedir))
         self.cachedir = cachedir
 
         # Copy of Zotero database. Zotero locks the original, so
@@ -40,11 +39,16 @@ class ZotHero(object):
         self._copy_path = os.path.join(cachedir, 'zotero.sqlite')
 
         # Attributes to back lazy-loading properties
-        self._zotero_dir = None  # Zotero's data directory
+        self._zotero_dir = zot_data_dir  # Zotero's data directory
+        self._attachments_dir = zot_attachments_dir  # Zotero's attachment base
         self._zot = None  # Zotero object
         self._cache = None  # Cache object
         self._index = None  # Index object
         self._styles = None  # Styles object
+
+        log.debug('[core] cachedir=%r', shortpath(cachedir))
+        log.debug('[core] zotero_dir=%r', shortpath(self.zotero_dir))
+        log.debug('[core] attachments_dir=%r', shortpath(self.attachments_dir))
 
     @property
     def zotero_dir(self):
@@ -58,14 +62,26 @@ class ZotHero(object):
 
         """
         if not self._zotero_dir:
-            path = os.path.expanduser(os.getenv('ZOTERO_DIR') or
-                                      DEFAULT_ZOTERO_DIR)
+            path = os.path.expanduser(DEFAULT_ZOTERO_DIR)
             if not os.path.exists(path):
                 raise ValueError('Zotero directory does not exist: %r' % path)
 
-            self._zotero_dir = unicodify(path)
+            self._zotero_dir = path
 
         return self._zotero_dir
+
+    @property
+    def attachments_dir(self):
+        """Path to Zotero's optional attachments base directory."""
+        if self._attachments_dir:
+            path = os.path.expanduser(self._attachments_dir)
+            if not os.path.exists(path):
+                raise ValueError('Attachments directory does not exist: %r' %
+                                 path)
+
+            return unicodify(path)
+
+        return None
 
     @property
     def zotero(self):
@@ -87,7 +103,7 @@ class ZotHero(object):
             # Ensure cached copy of database is up to date
             dbpath = copyifnewer(original, self._copy_path)
 
-            self._zot = Zotero(self.zotero_dir, dbpath)
+            self._zot = Zotero(self.zotero_dir, dbpath, self.attachments_dir)
 
             # Validate paths by calling storage & styles properties
             log.debug('[core] storage=%r', shortpath(self._zot.storage_dir))

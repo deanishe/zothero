@@ -128,6 +128,20 @@ FROM itemAttachments
 WHERE itemAttachments.parentItemID = ?
 """
 
+# Return ID of items whose attachments have been modified
+MODIFIED_ATTACHMENTS_SQL = u"""
+SELECT  (SELECT items.key
+            FROM items
+            WHERE items.itemID = itemAttachments.parentItemID)
+        key
+    FROM itemAttachments
+    LEFT JOIN items
+        ON itemAttachments.itemID = items.itemID
+WHERE itemAttachments.parentItemID IS NOT NULL
+AND items.dateModified > ?
+GROUP BY itemAttachments.parentItemID
+"""
+
 METADATA_SQL = u"""
 SELECT  fields.fieldName AS name,
         itemDataValues.value AS value
@@ -159,7 +173,7 @@ WHERE itemTags.itemID = ?
 class Zotero(object):
     """Interface to the Zotero database."""
 
-    def __init__(self, datadir, dbpath=None):
+    def __init__(self, datadir, dbpath=None, attachments_base_dir=None):
         """Load Zotero data from ``datadir``.
 
         Args:
@@ -168,6 +182,7 @@ class Zotero(object):
                 ``datadir``.
         """
         self.datadir = datadir
+        self._attachments_dir = attachments_base_dir
         self.dbpath = dbpath or os.path.join(datadir, 'zotero.sqlite')
         self._conn = None
 
@@ -198,6 +213,17 @@ class Zotero(object):
         return path
 
     @property
+    def attachments_dir(self):
+        """Path to Zotero's external attachment base directory."""
+        if not self._attachments_dir:
+            raise ValueError('attachments directory is unset')
+        if not os.path.exists(self._attachments_dir):
+            raise ValueError('attachments directory does not exist: %r' %
+                             self._attachments_dir)
+
+        return self._attachments_dir
+
+    @property
     def styles_dir(self):
         """Path to Zotero's directory for styles."""
         path = os.path.join(self.datadir, 'styles')
@@ -226,10 +252,16 @@ class Zotero(object):
     def modified_since(self, dt):
         """Iterate Entries modified since datetime."""
         sql = ITEMS_SQL + 'AND modified > ?'
-        for row in self.conn.execute(sql, (dt2sqlite(dt),)):
+        ts = dt2sqlite(dt)
+        for row in self.conn.execute(sql, (ts,)):
             e = Entry(**row)
             self._populate_entry(e)
             yield e
+        # Items whose attachments have changed
+        sql = MODIFIED_ATTACHMENTS_SQL
+        for row in self.conn.execute(sql, (ts,)):
+            log.debug('[zotero] attachment(s) modified')
+            yield self.entry(row['key'])
 
     def all_entries(self):
         """Return all database entries."""
@@ -278,17 +310,22 @@ class Zotero(object):
             # Attachment may be in Zotero's storage somewhere, so
             # fix path to point to the right place.
             if path and not os.path.exists(path):
-                for prefix in ('attachment:', 'storage:'):
-                    if path.startswith(prefix):
-                        path = path[len(prefix):]
-                        # x = os.path.splitext(path)[1]
-                        # if x not in ATTACHMENT_EXTS:
-                        #     continue
+                if path.startswith('storage:'):
+                    path = path[8:]
+                    path = os.path.join(self.storage_dir, key, path)
 
-                        path = os.path.join(self.storage_dir, key, path)
+                elif path.startswith('attachments:'):
+                    path = path[12:]
+                    try:
+                        path = os.path.join(self.attachments_dir, path)
+                    except ValueError as err:
+                        log.warning(u"[zotero] can't access attachment "
+                                    '"%s": %s', path, err)
+                        continue
 
-            e.attachments.append(Attachment(key=key, name=title, path=path,
-                                            url=url))
+            a = Attachment(key=key, name=title, path=path, url=url)
+            log.debug('[zotero] attachment=%r', a)
+            e.attachments.append(a)
 
         # --------------------------------------------------
         # Notes
@@ -302,6 +339,7 @@ class Zotero(object):
             k, v = row['name'], row['value']
 
             if k == 'title':
+                log.debug(u'[zotero] + "%s"', v)
                 e.title = v
 
             elif k == 'date':

@@ -1,0 +1,22 @@
+# Icons from webfonts via http://icons.deanishe.net
+#
+# Script ../bin/icons reads this file and downloads the
+# specified icons to this directory.
+#
+# Colours
+# blue:   5485F3
+# yellow: F8AC30
+# red:    B00000
+# green:  03AE03
+#
+
+# filename        font name       colour    icon name
+
+on                fontawesome     03AE03    dot-circle-o
+off               fontawesome     B00000    circle-o
+reload            fontawesome     F8AC30    refresh
+update-available  material        F8AC30    cloud-download
+update-ok         material        03AE03    cloud-done
+help              material        03AE03    help
+docs              material        5485F3    help
+issue             fontawesome     F8AC30    bug

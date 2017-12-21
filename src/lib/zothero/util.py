@@ -120,7 +120,8 @@ def copyifnewer(source, copy):
         str: Path to copy
     """
     if not os.path.exists(copy) or getmtime(source) > getmtime(copy):
-        log.debug('[util] copying %r to %r ...', source, copy)
+        log.debug('[util] copying %r to %r ...',
+                  shortpath(source), shortpath(copy))
         copyfile(source, copy)
 
     return copy
@@ -206,6 +207,9 @@ def json_serialise(obj):
 
 def shortpath(p):
     """Replace ``$HOME`` in path with ~."""
+    if not p:
+        return p
+
     h = os.path.expanduser(u'~')
     return p.replace(h, '~')
 
@@ -216,7 +220,7 @@ def timed(name=None):
     name = name or ''
     start_time = time.time()
     yield
-    log.debug('[%0.2fs] %s', time.time() - start_time, name)
+    log.info('[%0.2fs] %s', time.time() - start_time, name)
 
 
 def time_since(ts):

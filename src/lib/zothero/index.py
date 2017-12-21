@@ -22,7 +22,9 @@ from .util import dt2sqlite, timed, time_since, shortpath
 from .zotero import Entry
 
 # Version of the database schema/data format.
-DB_VERSION = 2
+# Increment this every time the schema or JSON format changes to
+# invalidate the existing cache.
+DB_VERSION = 4
 
 # SQL schema for the search database. The Entry is also stored in the
 # database as JSON for speed (it takes 7 SQL queries to retrieve an
@@ -275,10 +277,10 @@ class Index(object):
                         e.key,
                         e.title,
                         unicode(e.year),
-                        u' '.join([d.family for d in e.creators]),
+                        u' '.join([d.family for d in e.creators if d.family]),
                         u' '.join(e.tags),
                         u' '.join([d.name for d in e.collections]),
-                        u' '.join([d.name for d in e.attachments]),
+                        u' '.join([d.name for d in e.attachments if d.name]),
                         u' '.join(e.notes),
                     ]
 

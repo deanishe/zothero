@@ -1,0 +1,137 @@
+#!/usr/bin/env zsh
+
+set -e
+
+# URL of icon generator
+api="http://icons.deanishe.net/icon"
+here="$( cd "$( dirname "$0" )"; pwd )"
+root="$( cd "$here/../"; pwd )"
+# where workflow icons belong
+icondir="${root}/src/icons"
+# icon config file
+iconfile="${icondir}/icons.txt"
+
+prog="$( basename "$0" )"
+
+force=false
+verbose=false
+vopt=
+icons=()
+
+# log <arg>... | Echo arguments to STDERR
+log() {
+  echo "$@" >&2
+}
+
+# info <arg>.. | Write args to STDERR if VERBOSE is true
+info() {
+  $verbose && log $(print -P "%F{blue}..%f") "$@"
+  return 0
+}
+
+# success <arg>.. | Write green "ok" and args to STDERR if VERBOSE is true
+success() {
+  $verbose && log $(print -P "%F{green}ok%f") "$@"
+  return 0
+}
+
+# error <arg>.. | Write red "error" and args to STDERR
+error() {
+  log $(print -P '%F{red}error%f') "$@"
+}
+
+# fail <arg>.. | Write red "error" and args to STDERR, then exit with status 1
+fail() {
+  error "$@"
+  exit 1
+}
+
+# load | Read configuration file from STDIN
+load() {
+  typeset -g icons
+  while read line; do
+
+    # ignore lines that start with # or are empty
+    [[ $line =~ "#" ]] || test -z "$line" && continue
+
+    read fname font colour name <<< "$line"
+    icons+=($fname $font $colour $name)
+
+  done
+}
+
+usage() {
+cat <<EOF
+$prog [options]
+
+Download icons from server.
+
+Usage:
+    $prog [-v] [-f]
+    $prog -h
+
+Options:
+    -f      Force re-download
+    -h      Show this help message and exit
+    -v      Be verbose
+EOF
+}
+
+while getopts ":fhv" opt; do
+  case $opt in
+    f)
+      force=true;;
+    h)
+      usage
+      exit 0;;
+    v)
+      verbose=true
+      vopt='-v'
+      ;;
+    \?)
+      fail "invalid option: -$OPTARG";;
+  esac
+done
+shift $((OPTIND-1))
+
+
+cat "$iconfile" | load
+
+success "loaded config from $iconfile"
+
+total=$(( ${#icons} / 4 ))
+fetched=0
+j=0
+for (( i=1; i<${#icons}; i=i+4 )); do
+  j=$(( j + 1 ))
+
+  fname=$icons[$i]
+  font=$icons[$i+1]
+  colour=$icons[$i+2]
+  name=$icons[$i+3]
+
+  # info "j=$j, name=$name, font=$font, fname=$fname"
+
+  url="${api}/${font}/${colour}/${name}"
+  n="${fname}.png"
+  p="$icondir/$n"
+  pc="[$j/$total]"
+
+  # download source icon
+  copts=(-L)
+  $verbose && copts+=(-#) || copts+=(-sS)
+  $force || ! test -s "$p" && {
+    curl $copts -o "$p" "$url"
+    [[ $? -ne 0 ]] && fail "couldn't download $n"
+    success "downloaded $n"
+    fetched=$(( fetched + 1 ))
+  } || {
+    info "skipped existing $n"
+  }
+
+done
+
+verbose=true
+success "downloaded $fetched icon(s)"
+
+exit 0
