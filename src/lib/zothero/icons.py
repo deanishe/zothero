@@ -19,6 +19,7 @@ TYPE2ICON = {
     'book': 'book',
     'bookSection': 'chapter',
     'conferencePaper': 'conference',
+    'webpage': 'webpage',
 }
 
 

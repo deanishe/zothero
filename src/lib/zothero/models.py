@@ -69,22 +69,23 @@ class Entry(AttrDict):
 
     Attributes:
         id (int): Database ID for Entry
-        key (unicode): The unique identifier for this Entry
-        title (unicode): The title of the Entry
+        key (unicode): The unique identifier for this Entry.
+        title (unicode): The title of the Entry.
         date (unicode): Publication date in YYYY-MM-DD, YYYY-MM or YYYY
             format. The raw date string from Zotero is stored in
             ``zdata['date']``.
-        year (int): The year Entry was published
+        year (int): The year Entry was published.
         modified (datetime.datetime): Time when Entry was last modified.
-        library (int): Which library the Entry belongs to
-        type (unicode): The type of Entry, e.g. "journalArticle"
-        creators (list): Sequence of `Creator` objects
+        library (int): Which library the Entry belongs to.
+        type (unicode): The type of Entry, e.g. "journalArticle".
+        creators (list): Sequence of `Creator` objects.
         zdata (dict): All Zotero data using unprocessed keys and values.
         csl (dict): CSL data for exporting to CSL JSON.
-        collections (list): `Collection` objects the Entry belongs to
-        tags (list): Unicode tags belonging to Entry
-        attachments (list): Sequence of `Attachment` objects
-        notes (list): Plaintext (Unicode) Entry notes
+        collections (list): `Collection` objects the Entry belongs to.
+        tags (list): Unicode tags belonging to Entry.
+        attachments (list): Sequence of `Attachment` objects.
+        notes (list): Plaintext (Unicode) Entry notes.
+        abstract (unicode): Entry abstract.
 
     """
 
@@ -103,6 +104,16 @@ class Entry(AttrDict):
 
     def __init__(self, *args, **kwargs):
         super(Entry, self).__init__(*args, **kwargs)
+
+    @property
+    def authors(self):
+        """Creators whose type is ``author``."""
+        return [c for c in self.creators if c.type == 'author']
+
+    @property
+    def editors(self):
+        """Creators whose type is ``editor``."""
+        return [c for c in self.creators if c.type == 'editor']
 
     def __str__(self):
         return unicode(self).encode('utf-8', 'replace')

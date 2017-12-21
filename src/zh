@@ -15,9 +15,9 @@ ZotHero - Alfred workflow for Zotero.
 Usage:
     zh search <query>
     zh fields [<query>]
-    zh attachments <key> [<query>]
-    zh citations <key> [<query>]
-    zh copy <style> <key>
+    zh attachments <id> [<query>]
+    zh citations <id> [<query>]
+    zh copy <style> <id>
     zh config [<query>]
     zh select [--style <key>] [<query>]
     zh clear
@@ -123,6 +123,7 @@ def do_search(query):
         log.debug(u'%4d. %s', i + 1, e)
         f = EntryFormatter(e)
         sub = u'{} {}'.format(f.creators, f.year)
+        url = 'zotero://select/items/{}_{}'.format(e.library, e.key)
         if e.attachments:
             sub += u' Attachments: ' + str(len(e.attachments))
 
@@ -133,15 +134,16 @@ def do_search(query):
 
         it = wf.add_item(e.title or u'xxx',
                          sub,
-                         uid=e.key,
-                         arg=e.key,
+                         uid=e.id,
+                         arg=e.id,
                          icon=entry_icon(e),
+                         copytext=url,
                          largetext=large,
                          valid=True)
 
         it.setvar('action', 'open-in-zotero')
-        it.setvar('key', e.key)
-        it.setvar('library', e.library)
+        it.setvar('url', url)
+        it.setvar('id', e.id)
 
         # ------------------------------------------------------------------
         # Citations
@@ -174,14 +176,19 @@ def do_search(query):
         if e.attachments:
             mod = it.add_modifier('shift', 'View attachments')
             mod.setvar('action', 'show-attachments')
+        else:
+            mod = it.add_modifier('shift', 'No attachments', valid=False)
 
     wf.send_feedback()
 
 
-def do_attachments(key, query):
+def do_attachments(entry_id, query):
     """Filter and open an entry's attachments."""
     from zothero import app
-    e = app.entry(key)
+    from zothero.util import shortpath
+
+    e = app.entry(entry_id)
+
     if not e:
         wf.add_item('Unknown Entry', 'Entry was not found', icon=ICON_WARNING)
         wf.send_feedback()
@@ -199,7 +206,8 @@ def do_attachments(key, query):
 
     for att in atts:
         if att.path:
-            wf.add_item(att.name, att.path,
+            wf.add_item(att.name,
+                        shortpath(att.path),
                         arg=att.path,
                         icon=att.path,
                         type='file',
@@ -215,14 +223,14 @@ def do_attachments(key, query):
     wf.send_feedback()
 
 
-def do_citations(query, entry_key):
+def do_citations(query, entry_id):
     """Filter citation formats."""
     from zothero import app
 
     # Get entry and styles
-    e = app.entry(entry_key)
+    e = app.entry(entry_id)
     if not e:
-        raise ValueError('Unknown entry: ' + entry_key)
+        raise ValueError('Unknown entry: ' + entry_id)
 
     styles = app.styles.all()
 
@@ -239,7 +247,7 @@ def do_citations(query, entry_key):
             arg=s.key,
             valid=True,
         )
-        it.setvar('key', entry_key)
+        it.setvar('id', entry_id)
         it.setvar('action', 'copy-cite')
         it.setvar('style', s.key)
 
@@ -267,24 +275,24 @@ def do_citations(query, entry_key):
     wf.send_feedback()
 
 
-def do_copy(style_key, entry_key):
+def do_copy(style_key, entry_id):
     """Copy a citation to the pasteboard."""
     from zothero import app
     import pasteboard as pb
 
     wf.text_errors = True
 
-    e = app.entry(entry_key)
+    e = app.entry(entry_id)
     s = app.style(style_key)
 
     # log.debug('entry=%r', e)
     # log.debug('style=%r', s)
 
     if not e:
-        raise ValueError('Unknown Entry: ' + entry_key)
+        raise ValueError('Unknown Entry: %r' % entry_id)
 
     if not s:
-        raise ValueError('Unknown Style: ' + style_key)
+        raise ValueError('Unknown Style: %r' % style_key)
 
     data = app.styles.cite(e, s)
     pbdata = {
@@ -461,6 +469,7 @@ def main(wf):
     wf.args  # call to ensure any magic arguments are intercepted
     args = docopt(__doc__)
     query = wf.decode(args.get('<query>') or '')
+    entry_id = int(args['<id>']) if args['<id>'] else None
     log.debug('args=%r', args)
 
     # Zotero data directories
@@ -478,10 +487,10 @@ def main(wf):
     zothero.wf = wf
 
     if args['attachments']:
-        return do_attachments(args['<key>'], query)
+        return do_attachments(entry_id, query)
 
     if args['citations']:
-        return do_citations(query, args['<key>'])
+        return do_citations(query, entry_id)
 
     if args['clear']:
         return do_clear()
@@ -490,7 +499,7 @@ def main(wf):
         return do_config(args['<query>'])
 
     if args['copy']:
-        return do_copy(args['<style>'], args['<key>'])
+        return do_copy(args['<style>'], entry_id)
 
     if args['fields']:
         return do_fields(query)

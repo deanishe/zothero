@@ -65,8 +65,8 @@ SELECT  items.itemID AS id,
         ON items.itemTypeID = itemTypes.itemTypeID
     LEFT JOIN deletedItems
         ON items.itemID = deletedItems.itemID
--- Ignore notes, webpages and attachments
-WHERE items.itemTypeID not IN (1, 13, 14)
+-- Ignore notes and attachments
+WHERE items.itemTypeID not IN (1, 14)
 AND deletedItems.dateDeleted IS NULL
 """
 
@@ -92,15 +92,6 @@ SELECT  collections.collectionName AS name,
         ON collections.collectionID = collectionItems.collectionID
 WHERE collectionItems.itemID = ?
 """
-
-# ATTACHMENTS_SQL = u"""
-# SELECT  itemAttachments.path AS path,
-#         items.key AS key
-#     FROM itemAttachments
-#     LEFT JOIN items
-#         ON itemAttachments.itemID = items.itemID
-# WHERE itemAttachments.parentItemID = ?
-# """
 
 ATTACHMENTS_SQL = u"""
 SELECT
@@ -237,6 +228,11 @@ class Zotero(object):
         for row in self.conn.execute(ITEMS_SQL):
             yield row['key']
 
+    def ids(self):
+        """Iterate entry IDs."""
+        for row in self.conn.execute(ITEMS_SQL):
+            yield row['id']
+
     def entry(self, key):
         """Return Entry for key."""
         sql = ITEMS_SQL + 'AND key = ?'
@@ -281,6 +277,7 @@ class Zotero(object):
         e.title = u''
         e.date = None
         e.year = 0
+        e.abstract = u''
         e.zdata = {}
 
         # Parseable attributes
@@ -347,6 +344,9 @@ class Zotero(object):
                 # e.zdata['date_words'] = v.split()[-1]
                 e.date = parse_date(v)
                 e.year = int(v[:4])
+
+            elif k == 'abstractNote':
+                e.abstract = v
 
             # everything goes in the `zdata` dict
             e.zdata[k] = v

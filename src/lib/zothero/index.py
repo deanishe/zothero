@@ -24,24 +24,24 @@ from .zotero import Entry
 # Version of the database schema/data format.
 # Increment this every time the schema or JSON format changes to
 # invalidate the existing cache.
-DB_VERSION = 4
+DB_VERSION = 5
 
 # SQL schema for the search database. The Entry is also stored in the
 # database as JSON for speed (it takes 7 SQL queries to retrieve an
 # Entry from the Zotero database).
 INDEX_SCHEMA = """
 CREATE VIRTUAL TABLE search USING fts3(
-    key, title, year, creators,
-    tags, collections, attachments, notes
+    id, title, year, creators, authors, editors,
+    tags, collections, attachments, notes, abstract
 );
 
 CREATE TABLE modified (
-    key TEXT PRIMARY KEY NOT NULL,
+    id INTEGER PRIMARY KEY NOT NULL,
     modified TIMESTAMP NOT NULL
 );
 
 CREATE TABLE data (
-    key TEXT PRIMARY KEY NOT NULL,
+    id INTEGER PRIMARY KEY NOT NULL,
     json TEXT DEFAULT "{}"
 );
 
@@ -54,9 +54,9 @@ CREATE TABLE dbinfo (
 log = logging.getLogger(__name__)
 
 SEARCH_SQL = """
-SELECT search.key AS key, json, rank(matchinfo(search)) AS score
+SELECT search.id AS id, json, rank(matchinfo(search)) AS score
 FROM search
-LEFT JOIN data ON search.key = data.key
+LEFT JOIN data ON search.id = data.id
 WHERE search MATCH ?
 ORDER BY score DESC
 LIMIT 100
@@ -72,12 +72,12 @@ PRAGMA INTEGRITY_CHECK;
 """
 
 # Search database column names
-COLUMNS = ('title', 'year', 'creators', 'tags',
-           'collections', 'attachments', 'notes')
+COLUMNS = ('title', 'year', 'creators', 'authors', 'editors', 'tags',
+           'collections', 'attachments', 'notes', 'abstract')
 
 # Search weightings for columns. The first column (key) is ignored (0.0)
-# collections, attachments and notes have slightly lower weightings.
-WEIGHTINGS = (0.0, 1.0, 1.0, 1.0, 1.0, 0.8, 0.6, 0.7)
+# collections, attachments, notes and abstract have lower weightings.
+WEIGHTINGS = (0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5, 0.4, 0.3, 0.3)
 
 
 class InitialiseDB(Exception):
@@ -190,17 +190,17 @@ class Index(object):
         log.debug('[index] last updated %s', time_since(t))
         return t
 
-    def entry(self, key):
-        """Return `Entry` for `key`.
+    def entry(self, entry_id):
+        """Return `Entry` for `entry_id`.
 
         Args:
-            key (str): Zotero database key
+            id (int): Zotero database ID
 
         Returns:
-            zothero.zotero.Entry: `Entry` for `key` or `None` if not found.
+            zothero.zotero.Entry: `Entry` for `id` or `None` if not found.
         """
-        sql = """SELECT json FROM data WHERE key = ?"""
-        row = self.conn.execute(sql, (key,)).fetchone()
+        sql = """SELECT json FROM data WHERE id = ?"""
+        row = self.conn.execute(sql, (entry_id,)).fetchone()
         if not row:
             return None
 
@@ -222,10 +222,10 @@ class Index(object):
         # If we didn't get many results, perform a second search using
         # a wildcard
         if len(entries) < 30 and not query.endswith('*'):
-            seen = {e.key for e in entries}  # ignore any duplicates
+            seen = {e.id for e in entries}  # ignore any duplicates
 
             for row in self.conn.execute(SEARCH_SQL, (query + '*',)):
-                if row['key'] not in seen:
+                if row['id'] not in seen:
                     entries.append(Entry.from_json(row['json']))
 
         log.info('[index] %d result(s) for %r', len(entries), query)
@@ -257,14 +257,14 @@ class Index(object):
             with self.cursor() as c:
                 # ------------------------------------------------------
                 # Get keys of indexed items
-                sql = u'SELECT key FROM data'
-                ikeys = {row['key'] for row in c.execute(sql)}
+                sql = u'SELECT id FROM data'
+                index_ids = {row['id'] for row in c.execute(sql)}
 
                 # ------------------------------------------------------
                 # New and updated entries
 
                 i = j = 0  # updated, new entries
-                if not ikeys:  # Index is empty, fetch all entries
+                if not index_ids:  # Index is empty, fetch all entries
                     it = zot.all_entries()
                 else:  # Only fetch entries modified since last update
                     # Zotero stores TIMESTAMPs in UTC
@@ -274,63 +274,69 @@ class Index(object):
                 for e in it:
 
                     data = [
-                        e.key,
+                        e.id,
                         e.title,
                         unicode(e.year),
                         u' '.join([d.family for d in e.creators if d.family]),
+                        u' '.join([d.family for d in e.authors if d.family]),
+                        u' '.join([d.family for d in e.editors if d.family]),
                         u' '.join(e.tags),
                         u' '.join([d.name for d in e.collections]),
                         u' '.join([d.name for d in e.attachments if d.name]),
                         u' '.join(e.notes),
+                        e.abstract,
                     ]
 
-                    if e.key in ikeys:  # update
+                    if e.id in index_ids:  # update
                         i += 1
                         # Fulltext search
                         sql = u"""
                             UPDATE search
                                 SET title = ?, year = ?, creators = ?,
+                                    authors = ?, editors = ?,
                                     tags = ?, collections = ?,
-                                    attachments = ?, notes = ?
-                            WHERE key = ?
+                                    attachments = ?, notes = ?,
+                                    abstract = ?
+                            WHERE id = ?
                         """
-                        c.execute(sql, data[1:] + [e.key])
+                        c.execute(sql, data[1:] + [e.id])
 
                         # JSON data
-                        sql = u'UPDATE data SET json = ? WHERE key = ?'
-                        c.execute(sql, (e.json(), e.key))
+                        sql = u'UPDATE data SET json = ? WHERE id = ?'
+                        c.execute(sql, (e.json(), e.id))
 
                         # Modified time
-                        sql = u'UPDATE modified SET modified = ? WHERE key = ?'
-                        c.execute(sql, (dt2sqlite(e.modified), e.key))
+                        sql = u'UPDATE modified SET modified = ? WHERE id = ?'
+                        c.execute(sql, (dt2sqlite(e.modified), e.id))
 
                     else:  # new entry
                         j += 1
                         # Fulltext search table
                         sql = u"""
-                            INSERT INTO search VALUES(?, ?, ?, ?, ?, ?, ?, ?)
+                            INSERT INTO search
+                                VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         """
                         c.execute(sql, data)
 
                         # JSON data
                         c.execute('INSERT INTO data VALUES (?, ?)',
-                                  (e.key, e.json()))
+                                  (e.id, e.json()))
 
                         # Modified time
                         c.execute('INSERT INTO modified VALUES (?, ?)',
-                                  (e.key, dt2sqlite(e.modified)))
+                                  (e.id, dt2sqlite(e.modified)))
 
                 # ------------------------------------------------------
                 # Remove deleted entries from index
-                gone = ikeys - set(zot.keys())
+                gone = index_ids - set(zot.ids())
 
                 queries = (
-                    u'DELETE FROM search WHERE key = ?',
-                    u'DELETE FROM data WHERE key = ?',
-                    u'DELETE FROM modified WHERE key = ?',
+                    u'DELETE FROM search WHERE id = ?',
+                    u'DELETE FROM data WHERE id = ?',
+                    u'DELETE FROM modified WHERE id = ?',
                 )
                 for sql in queries:
-                    c.executemany(sql, [(key,) for key in gone])
+                    c.executemany(sql, [(id_,) for id_ in gone])
 
                 log.debug('[index] %d updated, %d new, %d deleted entries',
                           i, j, len(gone))

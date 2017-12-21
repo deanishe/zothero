@@ -456,7 +456,7 @@
 				<key>spaces</key>
 				<string></string>
 				<key>url</key>
-				<string>zotero://select/items/{var:library}_{var:key}</string>
+				<string>{var:url}</string>
 				<key>utf8</key>
 				<true/>
 			</dict>
@@ -737,7 +737,7 @@ variables={allvars}
 				<key>runningsubtext</key>
 				<string></string>
 				<key>script</key>
-				<string>./zh attachments $key "$1"</string>
+				<string>./zh attachments $id "$1"</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
@@ -793,6 +793,52 @@ variables={allvars}
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string></string>
+				<key>script</key>
+				<string>./zh citations "$id" "$1"
+</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string></string>
+				<key>title</key>
+				<string></string>
+				<key>type</key>
+				<integer>5</integer>
+				<key>withspace</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>8956B5DB-42F0-4570-9265-ECD302239D56</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>triggerid</key>
 				<string>citations</string>
 			</dict>
@@ -821,52 +867,6 @@ variables={allvars}
 			<string>8F85FB21-8921-402F-BF70-C7C35E769212</string>
 			<key>version</key>
 			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>alfredfiltersresults</key>
-				<false/>
-				<key>alfredfiltersresultsmatchmode</key>
-				<integer>0</integer>
-				<key>argumenttrimmode</key>
-				<integer>0</integer>
-				<key>argumenttype</key>
-				<integer>1</integer>
-				<key>escaping</key>
-				<integer>102</integer>
-				<key>queuedelaycustom</key>
-				<integer>3</integer>
-				<key>queuedelayimmediatelyinitially</key>
-				<true/>
-				<key>queuedelaymode</key>
-				<integer>0</integer>
-				<key>queuemode</key>
-				<integer>1</integer>
-				<key>runningsubtext</key>
-				<string></string>
-				<key>script</key>
-				<string>./zh citations "$key" "$1"
-</string>
-				<key>scriptargtype</key>
-				<integer>1</integer>
-				<key>scriptfile</key>
-				<string></string>
-				<key>subtext</key>
-				<string></string>
-				<key>title</key>
-				<string></string>
-				<key>type</key>
-				<integer>5</integer>
-				<key>withspace</key>
-				<false/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.input.scriptfilter</string>
-			<key>uid</key>
-			<string>8956B5DB-42F0-4570-9265-ECD302239D56</string>
-			<key>version</key>
-			<integer>2</integer>
 		</dict>
 		<dict>
 			<key>type</key>
@@ -919,25 +919,12 @@ variables={allvars}
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>triggerid</key>
-				<string>copy-cite</string>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.trigger.external</string>
-			<key>uid</key>
-			<string>AEE6452E-9186-4609-8AD4-D74F469F1A79</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
 				<key>concurrently</key>
 				<false/>
 				<key>escaping</key>
 				<integer>102</integer>
 				<key>script</key>
-				<string>./zh copy "$style" "$key"</string>
+				<string>./zh copy "$style" "$id"</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
@@ -996,6 +983,19 @@ variables={allvars}
 			<string>alfred.workflow.output.notification</string>
 			<key>uid</key>
 			<string>C76774C3-12EA-4242-AF38-35F8D7EA1E9B</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>triggerid</key>
+				<string>copy-cite</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.external</string>
+			<key>uid</key>
+			<string>AEE6452E-9186-4609-8AD4-D74F469F1A79</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
@@ -1689,7 +1689,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 		<string></string>
 	</dict>
 	<key>version</key>
-	<string>0.1.2-beta</string>
+	<string>0.1.3-beta</string>
 	<key>webaddress</key>
 	<string>https://github.com/deanishe/zothero</string>
 </dict>

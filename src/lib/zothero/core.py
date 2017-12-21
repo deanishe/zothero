@@ -145,7 +145,7 @@ class ZotHero(object):
 
         return self._styles
 
-    def entry(self, key):
+    def entry(self, entry_id):
         """Retrieve `Entry` for ``key``.
 
         Args:
@@ -154,7 +154,7 @@ class ZotHero(object):
         Returns:
             zothero.zotero.Entry: `Entry` for `key` or `None` if not found.
         """
-        return self.index.entry(key)
+        return self.index.entry(entry_id)
 
     def search(self, query):
         """Search the Zotero database."""
