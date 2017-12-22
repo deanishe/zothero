@@ -42,7 +42,7 @@ class ZotHero(object):
         self._zotero_dir = zot_data_dir  # Zotero's data directory
         self._attachments_dir = zot_attachments_dir  # Zotero's attachment base
         self._zot = None  # Zotero object
-        self._cache = None  # Cache object
+        # self._cache = None  # Cache object
         self._index = None  # Index object
         self._styles = None  # Styles object
 
@@ -123,25 +123,37 @@ class ZotHero(object):
         if not self._index:
             from .index import Index
             self._index = Index(os.path.join(self.cachedir, 'search.sqlite'))
-            self._index.update(self.zotero)
+            # self._index.update(self.zotero)
 
         return self._index
 
     @property
-    def cache(self):
-        """Top-level cache."""
-        if not self._cache:
-            from .cache import Cache
-            self._cache = Cache(os.path.join(self.cachedir, 'cache.sqlite'))
+    def stale(self):
+        """Return ``True`` if search index isn't up to date."""
+        if self.index.empty:
+            return True
 
-        return self._cache
+        return self.zotero.last_updated > self.index.last_updated
+
+    def update_index(self, force=False):
+        """Update the search index."""
+        self.index.update(self.zotero, force)
+
+    # @property
+    # def cache(self):
+    #     """Top-level cache."""
+    #     if not self._cache:
+    #         from .cache import Cache
+    #         self._cache = Cache(os.path.join(self.cachedir, 'cache.sqlite'))
+
+    #     return self._cache
 
     @property
     def styles(self):
         """CSL Styles loader."""
         if not self._styles:
             from .styles import Styles
-            self._styles = Styles(self.zotero.styles_dir, self.cache)
+            self._styles = Styles(self.zotero.styles_dir, self.cachedir)
 
         return self._styles
 

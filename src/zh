@@ -17,13 +17,16 @@ Usage:
     zh fields [<query>]
     zh attachments <id> [<query>]
     zh citations <id> [<query>]
-    zh copy <style> <id>
+    zh copy [--bibliography] <style> <id>
     zh config [<query>]
+    zh locale [<query>]
     zh select [--style <key>] [<query>]
     zh clear
+    zh reindex
     zh --help
 
 Options:
+    -b, --bibliography            Copy bibliography-style citation.
     -s <key>, --style=<key>       The currently-selected style.
     -h, --help                    Show this message and exit.
 
@@ -39,13 +42,15 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'lib'))
 
 from docopt import docopt
 from workflow import Workflow3, ICON_WARNING, ICON_WEB
+from workflow.background import is_running, run_in_background
 
 
 log = None
 
-# Citation styles for CMD and OPT
-CITE_STYLE_CMD = os.getenv('CITE_CMD')
-CITE_STYLE_OPT = os.getenv('CITE_OPT')
+# User's preferred citation style
+CITE_STYLE = os.getenv('CITE_STYLE')
+# User's preferred locale for citations
+LOCALE = os.getenv('LOCALE')
 VERSION = os.getenv('alfred_workflow_version') or ''
 
 # GitHub repo to check for updates
@@ -59,14 +64,16 @@ URL_ISSUES = 'https://github.com/deanishe/zothero/issues'
 URL_DOCS = 'https://github.com/deanishe/zothero/blob/master/README.md'
 
 # Workflow icons
-ICON_ON = 'icons/on.png'
+ICON_DOCS = 'icons/docs.png'
+ICON_HELP = 'icons/help.png'
+ICON_ISSUE = 'icons/issue.png'
+ICON_LOCALE = 'icons/locale.png'
+ICON_LOG = 'icons/log.png'
 ICON_OFF = 'icons/off.png'
+ICON_ON = 'icons/on.png'
 ICON_RELOAD = 'icons/reload.png'
 ICON_UPDATE_AVAILABLE = 'icons/update-available.png'
 ICON_UPDATE_OK = 'icons/update-ok.png'
-ICON_HELP = 'icons/help.png'
-ICON_DOCS = 'icons/docs.png'
-ICON_ISSUE = 'icons/issue.png'
 
 
 def do_fields(query):
@@ -94,14 +101,20 @@ def do_search(query):
     from zothero.icons import entry_icon
     from zothero.index import COLUMNS
 
-    style_cmd = style_opt = None
-    if CITE_STYLE_CMD:
-        style_cmd = app.styles.get(CITE_STYLE_CMD)
-        log.debug(u'CMD style: %s', style_cmd.name)
+    style = None
+    if CITE_STYLE:
+        style = app.styles.get(CITE_STYLE)
+        log.debug(u'Citation style: %s', style.name)
 
-    if CITE_STYLE_OPT:
-        style_opt = app.styles.get(CITE_STYLE_OPT)
-        log.debug(u'OPT style: %s', style_opt.name)
+    # ------------------------------------------------------------------
+    # Update index in background if it's out of date
+    running = is_running('update')
+    if app.stale and not running:
+        run_in_background('update', [__file__, 'reindex'])
+        running = True
+
+    if running:  # Tell Alfred to re-run the workflow
+        wf.rerun = 0.2
 
     # Get entries matching query
     entries = app.search(query)
@@ -109,7 +122,15 @@ def do_search(query):
     # ------------------------------------------------------------------
     # If no entries, show "Search XYZ" message or "no results" warning
     if not entries:
-        if query.endswith(':'):  # probably a category...
+        if app.index.empty:  # no results because there's no search index
+            wf.add_item(
+                u'Initialising Search Index …',
+                'Your results will appear momentarily',
+                valid=False,
+                icon=ICON_RELOAD,
+            )
+
+        elif query.endswith(':'):  # probably a category...
             col = query[:-1]
             if col in COLUMNS:
                 wf.add_item(u'Search "{}"…'.format(col.title()))
@@ -147,24 +168,21 @@ def do_search(query):
 
         # ------------------------------------------------------------------
         # Citations
-        if style_cmd:
-            mod = it.add_modifier('cmd',
-                                  u'Copy citation: ' + style_cmd.name)
+        if style:
+            it.setvar('stylename', style.name)  # for notification
+
+            mod = it.add_modifier('cmd', u'Copy citation (%s)' % style.name)
             mod.setvar('action', 'copy-cite')
-            mod.setvar('style', style_cmd.key)
+            mod.setvar('style', style.key)
             # For notification
-            mod.setvar('stylename', style_cmd.name)
+
+            mod = it.add_modifier('alt', u'Copy bibliography (%s)' % style.name)
+            mod.setvar('action', 'copy-cite')
+            mod.setvar('bibliography', '1')
+            mod.setvar('style', style.key)
+
         else:
             it.add_modifier('cmd', u'No citation format set', valid=False)
-
-        if style_opt:
-            mod = it.add_modifier('alt',
-                                  u'Copy citation: ' + style_opt.name)
-            mod.setvar('action', 'copy-cite')
-            mod.setvar('style', style_opt.key)
-            # For notification
-            mod.setvar('stylename', style_opt.name)
-        else:
             it.add_modifier('alt', u'No citation format set', valid=False)
 
         # All citation formats
@@ -243,7 +261,7 @@ def do_citations(query, entry_id):
     for s in styles:
         it = wf.add_item(
             s.name,
-            u'Copy citation for "{}"'.format(e.title),
+            u'Copy citation for "%s"' % e.title,
             arg=s.key,
             valid=True,
         )
@@ -251,31 +269,26 @@ def do_citations(query, entry_id):
         it.setvar('action', 'copy-cite')
         it.setvar('style', s.key)
 
-        if s.key != CITE_STYLE_CMD:
-            mod = it.add_modifier('cmd', u'Set as default format for ⌘↩')
-            mod.setvar('varname', 'CITE_CMD')
-            mod.setvar('varval', s.key)
-            mod.setvar('action', 'set-default')
-            mod.setvar('next', 'citations')
-            # For notification
-            mod.setvar('modkey', u'⌘↩')
-            mod.setvar('stylename', s.name)
+        mod = it.add_modifier('cmd',
+                              u'Copy citation for "%s"' % e.title)
+        mod = it.add_modifier('alt',
+                              u'Copy bibliography for "%s"' % e.title)
+        mod.setvar('bibliography', '1')
 
-        if s.key != CITE_STYLE_OPT:
-            mod = it.add_modifier('alt', u'Set as default format for ⌥↩')
-            mod.setvar('varname', 'CITE_OPT')
+        if s.key != CITE_STYLE:
+            mod = it.add_modifier('ctrl', u'Set as default style')
+            mod.setvar('varname', 'CITE_STYLE')
             mod.setvar('varval', s.key)
             mod.setvar('action', 'set-default')
             mod.setvar('next', 'citations')
             # For notification
-            mod.setvar('modkey', u'⌥↩')
             mod.setvar('stylename', s.name)
 
     wf.warn_empty('No Matching Styles', 'Try a different query?')
     wf.send_feedback()
 
 
-def do_copy(style_key, entry_id):
+def do_copy(style_key, entry_id, bib_style=False):
     """Copy a citation to the pasteboard."""
     from zothero import app
     import pasteboard as pb
@@ -285,16 +298,13 @@ def do_copy(style_key, entry_id):
     e = app.entry(entry_id)
     s = app.style(style_key)
 
-    # log.debug('entry=%r', e)
-    # log.debug('style=%r', s)
-
     if not e:
         raise ValueError('Unknown Entry: %r' % entry_id)
 
     if not s:
         raise ValueError('Unknown Style: %r' % style_key)
 
-    data = app.styles.cite(e, s)
+    data = app.styles.cite(e, s, bib_style, LOCALE)
     pbdata = {
         pb.UTI_HTML: data['html'],
         pb.UTI_PLAIN: data['text'],
@@ -306,15 +316,12 @@ def do_copy(style_key, entry_id):
 def do_config(query):
     """Show workflow options."""
     from zothero import app
+    from cite.locales import lookup
 
-    style_cmd = style_opt = None
-    if CITE_STYLE_CMD:
-        style_cmd = app.styles.get(CITE_STYLE_CMD)
-        log.debug(u'CMD style: %s', style_cmd.name)
-
-    if CITE_STYLE_OPT:
-        style_opt = app.styles.get(CITE_STYLE_OPT)
-        log.debug(u'OPT style: %s', style_opt.name)
+    style = None
+    if CITE_STYLE:
+        style = app.styles.get(CITE_STYLE)
+        log.debug(u'Default style: %s', style.name)
 
     items = []  # (item params, variables) tuples
     if wf.update_available:
@@ -335,47 +342,48 @@ def do_config(query):
             icon=ICON_UPDATE_OK,
         ), {}))
 
-    # Styles
+    # Style
     icon = ICON_OFF
     name = 'None'
     key = ''
-    if style_cmd:
+    if style:
         icon = ICON_ON
-        name = style_cmd.name
-        key = style_cmd.key
+        name = style.name
+        key = style.key
 
     items.append((dict(
-        title=u'⌘↩ Style: ' + name,
+        title=u'Default Style: ' + name,
         subtitle=u'↩ to change style',
         valid=True,
         icon=icon,
     ), dict(
         action='choose-style',
-        varname='CITE_CMD',
-        modkey=u'⌘↩',
+        varname='CITE_STYLE',
         style=key,
     )))
 
-    icon = ICON_OFF
-    name = 'None'
-    key = ''
-    if style_opt:
-        icon = ICON_ON
-        name = style_opt.name
-        key = style_opt.key
+    # Locale
+    name = 'Default (US English)'
+    icon = ICON_LOCALE
+    if LOCALE:
+        loc = lookup(LOCALE)
+        if not loc:
+            name = 'Invalid'
+            icon = ICON_WARNING
+        else:
+            name = loc.name
 
     items.append((dict(
-        title=u'⌥↩ Style: ' + name,
+        title=u'Locale: ' + name,
         subtitle=u'↩ to change style',
         valid=True,
         icon=icon,
     ), dict(
-        action='choose-style',
-        varname='CITE_OPT',
-        modkey=u'⌥↩',
-        style=key,
+        action='choose-locale',
+        varname='LOCALE',
     )))
 
+    # Housekeeping
     items.append((dict(
         title='Reload Zotero Data',
         subtitle='Re-read your Zotero database',
@@ -385,6 +393,15 @@ def do_config(query):
         action='reload',
     )))
 
+    items.append((dict(
+        title='Open Log File',
+        subtitle='Open workflow log file in default app',
+        autocomplete='workflow:openlog',
+        icon=ICON_LOG,
+        valid=False,
+    ), {}))
+
+    # Help
     items.append((dict(
         title='View Documentation',
         subtitle='Open the documentation in your browser',
@@ -427,7 +444,6 @@ def do_select(query, style_key):
     from zothero import app
 
     styles = app.styles.all()
-    modkey = wf.decode(os.getenv('modkey') or '')
 
     # Filter styles
     if query:
@@ -437,18 +453,19 @@ def do_select(query, style_key):
     for s in styles:
         icon = ICON_OFF
         valid = True
-        sub = u'↩ to set this style for ' + modkey
+        sub = u'↩ to set as default style'
         if s.key == style_key:
             icon = ICON_ON
             valid = False
-            sub = u'Style already assigned to ' + modkey
+            sub = u'Current default style'
 
         it = wf.add_item(s.name,
                          sub,
                          valid=valid,
                          icon=icon)
         it.setvar('varval', s.key)
-        it.setvar('stylename', s.name)
+        it.setvar('notifytitle', 'Changed Default Style')
+        it.setvar('notifytext', s.name)
         # Alfred doesn't notice changes fast enough, so turn this off
         # for the time being
         # it.setvar('next', 'config')
@@ -457,9 +474,57 @@ def do_select(query, style_key):
     wf.send_feedback()
 
 
+def do_locale(query):
+    """Choose a locale."""
+    from cite import locales
+
+    locs = locales.all()
+
+    # Filter styles
+    if query:
+        locs = wf.filter(query, locs, key=attrgetter('name'),
+                         min_score=30)
+
+    for l in locs:
+        icon = ICON_OFF
+        valid = True
+        sub = u'↩ to set as locale'
+        if l.code == LOCALE:
+            icon = ICON_ON
+            valid = False
+            sub = u'Current locale'
+
+        it = wf.add_item(l.name,
+                         sub,
+                         valid=valid,
+                         icon=icon)
+        it.setvar('varval', l.code)
+        it.setvar('notifytitle', 'Changed Locale')
+        it.setvar('notifytext', l.name)
+        # Alfred doesn't notice changes fast enough, so turn this off
+        # for the time being
+        # it.setvar('next', 'config')
+
+    wf.warn_empty('No Matching Locales', 'Try a different query?')
+    wf.send_feedback()
+
+
 def do_clear():
     """Remove cached data."""
-    wf.clear_cache(lambda fn: fn.endswith('.sqlite'))
+    def _deleteme(fn):
+        x = os.path.splitext(fn)[1]
+        return x.lower() in ('.sqlite', '.csl')
+
+    wf.clear_cache(_deleteme)
+
+
+def do_reindex():
+    """Re-index search database.
+
+    This command is called in a background job by `do_search()`.
+    """
+    from zothero import app
+    app.update_index(force=True)
 
 
 def main(wf):
@@ -499,10 +564,16 @@ def main(wf):
         return do_config(args['<query>'])
 
     if args['copy']:
-        return do_copy(args['<style>'], entry_id)
+        return do_copy(args['<style>'], entry_id, args['--bibliography'])
 
     if args['fields']:
         return do_fields(query)
+
+    if args['locale']:
+        return do_locale(query)
+
+    if args['reindex']:
+        return do_reindex()
 
     if args['search']:
         return do_search(query)

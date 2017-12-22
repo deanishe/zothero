@@ -12,12 +12,9 @@
 
 from __future__ import print_function, absolute_import
 
-import os
-import sys
-
 import pytest
 
-from zothero.util import HTMLText
+from zothero.util import asciify, HTMLText, safename
 
 
 def test_strip_tags():
@@ -31,6 +28,32 @@ def test_strip_tags():
     for html, text in data:
         res = HTMLText.strip(html)
         assert res == text
+
+
+def test_asciify():
+    """ASCII-fy strings."""
+    data = [
+        (u'Ärger', u'Arger'),
+        ('Ärger', u'Arger'),
+    ]
+
+    for s, x in data:
+        r = asciify(s)
+        assert r == x
+        assert isinstance(r, unicode)
+
+
+def test_safename():
+    """Filesystem-safe names."""
+    data = [
+        (u'Ärger', u'arger'),
+        ('https://www.google.com', u'https-www.google.com'),
+        (u'12345', u'12345'),
+    ]
+    for s, x in data:
+        r = safename(s)
+        assert r == x
+        assert isinstance(r, unicode)
 
 
 if __name__ == '__main__':  # pragma: no cover

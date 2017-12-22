@@ -13,6 +13,9 @@ from __future__ import print_function, absolute_import
 
 import os
 
+# Where the icons are stored
+ICONDIR = os.path.abspath(os.path.dirname(__file__))
+
 # Mapping of Zotero item types to icon basenames.
 TYPE2ICON = {
     'journalArticle': 'article',
@@ -27,9 +30,7 @@ def entry_icon(e):
     """Return the appropriate icon for an `Entry`."""
     basename = TYPE2ICON.get(e.type, 'written')
 
-    icondir = os.path.abspath(os.path.dirname(__file__))
-
     if e.attachments:
         basename += '-with-attachment'
 
-    return os.path.join(icondir, 'icons', '{}.png'.format(basename))
+    return os.path.join(ICONDIR, 'icons', basename + '.png')

@@ -25,19 +25,20 @@ Usage
 - `zot <query>` — Search your Zotero database (all fields).
     - `↩` — Open the entry in Zotero.
     - `⌘↩` — Copy citation to the pasteboard (see [Configuration](#configuration)).
-    - `⌥↩` — Copy citation to the pasteboard (see [Configuration](#configuration)).
+    - `⌥↩` — Copy bibliography-style citation to the pasteboard (see [Configuration](#configuration)).
     - `⇧↩` — View entry attachments (if present).
         - `↩` — Open an attachment in the default application.
     - `^↩` — View all citation styles.
-        - `↩` — Copy citation in selected style.
-        - `⌘↩` — Set style as default for `⌘↩`.
-        - `⌥↩` — Set style as default for `⌥↩`.
+        - `↩` or `⌘↩` — Copy citation in selected style.
+        - `⌥↩` — Copy bibliography-style citation in selected style.
+        - `^↩` — Set style as default.
 - `zot:[<query>]` — Search a specific field.
     - `↩` — Select a field to search against.
 - `zotconf [<query>]` — View and edit workflow configuration.
     - `An Update is Available` / `Workflow is Up To Date` — Whether a newer version of the workflow is available.
-    - `⌘↩ Style: …` and `⌥↩ Style: …` — Choose citation styles set for the `⌘↩` and `⌥↩` hotkeys (on search results).
+    - `Default Style: …` — Choose citation style for the `⌘↩` and `⌥↩` hotkeys (on search results).
     - `Reload Zotero Cache` — Clear the workflow's cache of Zotero data. Useful if the workflow gets out of sync with Zotero.
+    - `Open Log File` — Open the workflows log file in the default app (usually Console.app). Useful for checking on indexing problems (the indexer output isn't visible in Alfred's debugger).
     - `View Documentation` — Open this README in your browser.
     - `Report an Issue` — Open the GitHub issue tracker in your browser.
 
@@ -46,7 +47,7 @@ Usage
 Configuration
 -------------
 
-The workflow partly manages its own configuration, but you may need to use the [workflow configuration sheet][conf-sheet] if you don't use Zotero 5's default data directory.
+The workflow partly manages its own configuration with the keyword `zotconf`, but you may need to use the [workflow configuration sheet][conf-sheet] if you don't use Zotero 5's default data directory.
 
 
 <a name="zotero-data"></a>
@@ -64,7 +65,9 @@ If you have set a "Linked Attachment Base Directory" in Zotero, enter its path f
 
 The workflow uses the CSL styles you have installed in Zotero, so to add a new style, simply add it in Zotero. The workflow will pick up the new style(s) on the next run.
 
-To quickly copy citations using `⌘↩` and `⌥↩`, you must first assign citation styles to them. To do this, hit `^↩` on an entry to show all available styles, then use `⌘↩` or `⌥↩` on a style to set that as the default for that key combo.
+You can copy either a citation-/note-style citation or a bibliography-style one by hitting `⌘↩` or `⌥↩` respectively on a search result or citation style.
+
+For `⌘↩` and `⌥↩` to work on search results, you must first choose a default style. You can either do this in the configuration screen (keyword `zotconf`), or hitting `^↩` on a search result to show all citation styles, then `^↩` on a style to set that as the default.
 
 
 <a name="all-settings"></a>
@@ -72,15 +75,15 @@ To quickly copy citations using `⌘↩` and `⌥↩`, you must first assign cit
 
 Theses are all settings available in the [workflow configuration sheet][conf-sheet].
 
-You probably shouldn't edit the `CITE_*` variables yourself, as they need to be set to the internal ID of the style. Set them using the method described [above](#citation-styles).
+You probably shouldn't edit the `CITE_STYLE` or `LOCALE` variables yourself, as there's no guarantee the value you set is actually available. Adjust them using the `zotconf` keyword.
 
 
-|      Variable     |             Meaning              |
-|-------------------|----------------------------------|
-| `ATTACHMENTS_DIR` | Path to your Zotero attachments. |
-| `CITE_CMD`        | Citation style copied by `⌘↩`    |
-| `CITE_OPT`        | Citation style copied by `⌘⌥`    |
-| `ZOTERO_DIR`      | Path to your Zotero data.        |
+|      Variable     |                  Meaning                   |
+|-------------------|--------------------------------------------|
+| `ATTACHMENTS_DIR` | Path to your Zotero attachments.           |
+| `CITE_STYLE`      | Citation style copied by `⌘↩` and `⌥↩`     |
+| `LOCALE`          | Locale for citations. Default: US English. |
+| `ZOTERO_DIR`      | Path to your Zotero data.                  |
 
 
 <a name="licence--thanks"></a>
@@ -89,15 +92,15 @@ Licence & thanks
 
 This workflow is released under the [MIT licence][licence].
 
-It is heavily based on the [citeproc][citeproc] ([BSD][citeproc-licence]) and [Alfred-Workflow][aw] (also MIT) libraries.
+It is heavily based on the [Alfred-Workflow][aw] (also MIT) and [citeproc-ruby][citeproc-ruby] ([AGPL][citeproc-licence]) libraries.
 
 The [Zorro icon][icon-source] was created by [Dan Lowenstein][lowenstein] from [the Noun Project][noun-project].
 
 
 
 [aw]: http://www.deanishe.net/alfred-workflow/
-[citeproc]: https://pypi.python.org/pypi/citeproc-py/
-[citeproc-licence]: https://github.com/brechtm/citeproc-py/blob/master/LICENSE
+[citeproc-ruby]: https://github.com/inukshuk/citeproc-ruby
+[citeproc-licence]: https://github.com/inukshuk/citeproc-ruby/blob/master/AGPL
 [conf-sheet]: https://www.alfredapp.com/help/workflows/advanced/variables/#environment
 [icon-source]: https://thenounproject.com/term/zorro/14540/
 [lowenstein]: https://thenounproject.com/danny_mustache

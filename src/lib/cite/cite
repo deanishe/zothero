@@ -1,0 +1,88 @@
+#!/usr/bin/ruby
+# encoding: utf-8
+#
+# Copyright (c) 2017 Dean Jackson <deanishe@deanishe.net>
+#
+# MIT Licence. See http://opensource.org/licenses/MIT
+#
+# Created on 2017-12-22
+#
+
+$LOAD_PATH.unshift "#{__dir__}/gems/citeproc-1.0.7/lib"
+$LOAD_PATH.unshift "#{__dir__}/gems/citeproc-ruby-1.1.8/lib"
+$LOAD_PATH.unshift "#{__dir__}/gems/csl-1.4.5/lib"
+$LOAD_PATH.unshift "#{__dir__}/gems/namae-1.0.0/lib"
+$LOAD_PATH.unshift "#{__dir__}/gems/unicode_utils-1.4.0/lib"
+
+require 'citeproc'
+require 'csl'
+require 'json'
+require 'optparse'
+
+usage = <<-EOS
+Usage: cite [options] style.csl
+
+Generate a citation based on CSL-JSON (read from STDIN) and a CSL style
+definition.
+
+Options:
+EOS
+
+# CLI options
+options = {:locale => 'en-US'}
+
+optparse = OptionParser.new do |opts|
+  opts.banner = usage
+
+  opts.on('-l', '--locale LANG', 'Set a locale (default: en-US)') do |locale|
+    options[:locale] = locale
+  end
+
+  opts.on('-b', '--bibliography', 'Generate bibliography format citation') do |v|
+    options[:bibliography] = v
+  end
+
+  opts.on('-v', '--verbose', 'Output more information') do |v|
+    options[:verbose] = v
+  end
+
+  opts.on_tail('-h', '--help', 'Show this message and exit') do
+    puts opts
+    exit
+  end
+end
+
+optparse.parse!
+
+stylepath = ARGV[0]
+
+if !stylepath then
+  $stderr.puts optparse.banner
+  exit 1
+end
+
+$stderr.puts "reading CSL-JSON from STDIN ..." if options[:verbose]
+
+csldata = JSON.parse($stdin.read)
+id = csldata[0]['id']
+
+CSL::Locale.root = "#{__dir__}/locales"
+
+style = CSL::Style.load stylepath
+locale = CSL::Locale.load options[:locale]
+
+
+if options[:verbose] then
+  $stderr.puts "CSL definition: #{stylepath}"
+  $stderr.puts "locale: #{options[:locale]}"
+  $stderr.puts "style: #{style.title}"
+end
+
+cp = CiteProc::Processor.new style: style, format: 'html', locale: locale
+cp.import csldata
+
+if options[:bibliography] then
+  puts cp.render :bibliography, id: id
+else
+  puts cp.render :citation, id: id
+end

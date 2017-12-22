@@ -12,11 +12,13 @@
 
 # filename        font name       colour    icon name
 
-on                fontawesome     03AE03    dot-circle-o
+docs              material        5485F3    help
+help              material        03AE03    help
+issue             fontawesome     F8AC30    bug
+locale            material        5485F3    globe-alt
+log               fontawesome     03AE03    file
 off               fontawesome     B00000    circle-o
+on                fontawesome     03AE03    dot-circle-o
 reload            fontawesome     F8AC30    refresh
 update-available  material        F8AC30    cloud-download
 update-ok         material        03AE03    cloud-done
-help              material        03AE03    help
-docs              material        5485F3    help
-issue             fontawesome     F8AC30    bug

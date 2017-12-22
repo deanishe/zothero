@@ -14,7 +14,6 @@ from __future__ import print_function, absolute_import
 
 import json
 import logging
-import os
 
 from .util import json_serialise, utf8encode
 
@@ -189,8 +188,12 @@ class CSLStyle(AttrDict):
     """A CSL style configuration.
 
     Attributes:
+        hidden (bool): Whether the style is hidden (i.e. a parent style).
         name (unicode): Name of the style (extracted from the stylesheet).
         path (unicode): Path to the .csl file.
+        parent_url (unicode): URL of parent style for dependent styles.
+            ``None`` for independent styles.
+        url (unicode): Canonical URL of the style.
     """
 
     @classmethod
@@ -206,12 +209,10 @@ class CSLStyle(AttrDict):
     def key(self):
         """Unique key for style.
 
-        Key based on lowercase filename without extension.
-
         Returns:
             unicode: Style key.
         """
-        return os.path.splitext(os.path.basename(self.path))[0].lower()
+        return self.url
 
     def __unicode__(self):
         """String representation of style."""

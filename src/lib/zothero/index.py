@@ -231,16 +231,21 @@ class Index(object):
         log.info('[index] %d result(s) for %r', len(entries), query)
         return entries
 
-    def update(self, zot):
+    def update(self, zot, force=False):
         """Update search index from a `Zotero` instance.
 
         If the Zotero database is newer than the index (or the index
-        is empty), retrieve all entries from the Zotero DB and add them
+        is empty), retrieve entries from the Zotero DB and add them
         to the index.
 
+        Attempts to only load modified entries, but if there are none,
+        and the database file has changed, forces a full reload.
+
         Args:
-            zot (zothero.zotero.Zotero): `Zotero` object whose items
+            zot (zotero.Zotero): `Zotero` object whose items
                 should be added to the search index.
+            force (bool, optional): Re-index all entries, not just
+                modified ones.
 
         Returns:
             boolean: ``True`` if index was updated, else ``False``
@@ -252,91 +257,118 @@ class Index(object):
             return False
 
         with timed('updated search index'):
-            log.debug('[index] updating %r ...', shortpath(self.dbpath))
+            if not self._update(zot, force):
+                # Index wasn't updated, although the database has
+                # changed. That means a note or something else we
+                # can't see was edited. Force a full update.
+                self._update(zot, True)
 
-            with self.cursor() as c:
-                # ------------------------------------------------------
-                # Get keys of indexed items
-                sql = u'SELECT id FROM data'
-                index_ids = {row['id'] for row in c.execute(sql)}
+        return True
 
-                # ------------------------------------------------------
-                # New and updated entries
+    def _update(self, zot, force=False):
+        """Update search index from a `Zotero` instance.
 
-                i = j = 0  # updated, new entries
-                if not index_ids:  # Index is empty, fetch all entries
-                    it = zot.all_entries()
-                else:  # Only fetch entries modified since last update
-                    # Zotero stores TIMESTAMPs in UTC
-                    dt = datetime.utcfromtimestamp(self.last_updated)
-                    it = zot.modified_since(dt)
+        Retrieve Zotero entries and add to/update in the search index.
 
-                for e in it:
+        Args:
+            zot (zotero.Zotero): `Zotero` object whose items
+                should be added to the search index.
+            force (bool, optional): Re-index all entries, not just
+                modified ones.
 
-                    data = [
-                        e.id,
-                        e.title,
-                        unicode(e.year),
-                        u' '.join([d.family for d in e.creators if d.family]),
-                        u' '.join([d.family for d in e.authors if d.family]),
-                        u' '.join([d.family for d in e.editors if d.family]),
-                        u' '.join(e.tags),
-                        u' '.join([d.name for d in e.collections]),
-                        u' '.join([d.name for d in e.attachments if d.name]),
-                        u' '.join(e.notes),
-                        e.abstract,
-                    ]
+        Returns:
+            boolean: ``True`` if index was updated, else ``False``
+        """
+        log.debug('[index] updating %r ...', shortpath(self.dbpath))
+        if force:
+            log.debug('[index] forcing full re-index ...')
 
-                    if e.id in index_ids:  # update
-                        i += 1
-                        # Fulltext search
-                        sql = u"""
-                            UPDATE search
-                                SET title = ?, year = ?, creators = ?,
-                                    authors = ?, editors = ?,
-                                    tags = ?, collections = ?,
-                                    attachments = ?, notes = ?,
-                                    abstract = ?
-                            WHERE id = ?
-                        """
-                        c.execute(sql, data[1:] + [e.id])
+        with self.cursor() as c:
+            # ------------------------------------------------------
+            # Get keys of indexed items
+            sql = u'SELECT id FROM data'
+            index_ids = {row['id'] for row in c.execute(sql)}
 
-                        # JSON data
-                        sql = u'UPDATE data SET json = ? WHERE id = ?'
-                        c.execute(sql, (e.json(), e.id))
+            # ------------------------------------------------------
+            # New and updated entries
 
-                        # Modified time
-                        sql = u'UPDATE modified SET modified = ? WHERE id = ?'
-                        c.execute(sql, (dt2sqlite(e.modified), e.id))
+            i = j = 0  # updated, new entries
+            if force or not index_ids:  # Index is empty, fetch all entries
+                it = zot.all_entries()
+            else:  # Only fetch entries modified since last update
+                # Zotero stores TIMESTAMPs in UTC
+                dt = datetime.utcfromtimestamp(self.last_updated)
+                it = zot.modified_since(dt)
 
-                    else:  # new entry
-                        j += 1
-                        # Fulltext search table
-                        sql = u"""
-                            INSERT INTO search
-                                VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                        """
-                        c.execute(sql, data)
+            for e in it:
 
-                        # JSON data
-                        c.execute('INSERT INTO data VALUES (?, ?)',
-                                  (e.id, e.json()))
+                data = [
+                    e.id,
+                    e.title,
+                    unicode(e.year),
+                    u' '.join([d.family for d in e.creators if d.family]),
+                    u' '.join([d.family for d in e.authors if d.family]),
+                    u' '.join([d.family for d in e.editors if d.family]),
+                    u' '.join(e.tags),
+                    u' '.join([d.name for d in e.collections]),
+                    u' '.join([d.name for d in e.attachments if d.name]),
+                    u' '.join(e.notes),
+                    e.abstract,
+                ]
 
-                        # Modified time
-                        c.execute('INSERT INTO modified VALUES (?, ?)',
-                                  (e.id, dt2sqlite(e.modified)))
+                if e.id in index_ids:  # update
+                    i += 1
+                    # Fulltext search
+                    sql = u"""
+                        UPDATE search
+                            SET title = ?, year = ?, creators = ?,
+                                authors = ?, editors = ?,
+                                tags = ?, collections = ?,
+                                attachments = ?, notes = ?,
+                                abstract = ?
+                        WHERE id = ?
+                    """
+                    c.execute(sql, data[1:] + [e.id])
 
-                # ------------------------------------------------------
-                # Remove deleted entries from index
-                gone = index_ids - set(zot.ids())
+                    # JSON data
+                    sql = u'UPDATE data SET json = ? WHERE id = ?'
+                    c.execute(sql, (e.json(), e.id))
 
-                queries = (
-                    u'DELETE FROM search WHERE id = ?',
-                    u'DELETE FROM data WHERE id = ?',
-                    u'DELETE FROM modified WHERE id = ?',
-                )
-                for sql in queries:
-                    c.executemany(sql, [(id_,) for id_ in gone])
+                    # Modified time
+                    sql = u'UPDATE modified SET modified = ? WHERE id = ?'
+                    c.execute(sql, (dt2sqlite(e.modified), e.id))
 
-                log.debug('[index] %d updated, %d new, %d deleted entries',
-                          i, j, len(gone))
+                else:  # new entry
+                    j += 1
+                    # Fulltext search table
+                    sql = u"""
+                        INSERT INTO search
+                            VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """
+                    c.execute(sql, data)
+
+                    # JSON data
+                    c.execute('INSERT INTO data VALUES (?, ?)',
+                              (e.id, e.json()))
+
+                    # Modified time
+                    c.execute('INSERT INTO modified VALUES (?, ?)',
+                              (e.id, dt2sqlite(e.modified)))
+
+            # ------------------------------------------------------
+            # Remove deleted entries from index
+            gone = index_ids - set(zot.ids())
+
+            queries = (
+                u'DELETE FROM search WHERE id = ?',
+                u'DELETE FROM data WHERE id = ?',
+                u'DELETE FROM modified WHERE id = ?',
+            )
+            for sql in queries:
+                c.executemany(sql, [(id_,) for id_ in gone])
+
+            log.debug('[index] %d updated, %d new, %d deleted entries',
+                      i, j, len(gone))
+
+        # Return ``True`` if index was updated
+        return (len(gone) + i + j) > 0

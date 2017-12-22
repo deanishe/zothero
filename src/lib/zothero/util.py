@@ -19,7 +19,9 @@ import os
 from os.path import getmtime
 import re
 from shutil import copyfile
+import string
 import time
+from unicodedata import normalize
 
 log = logging.getLogger(__name__)
 
@@ -160,6 +162,20 @@ def utf8encode(s):
     return str(s)
 
 
+def asciify(s):
+    """Ensure string only contains ASCII characters.
+
+    Args:
+        s (basestring): Unicode or bytestring.
+
+    Returns:
+        unicode: String containing only ASCII characters.
+    """
+    u = normalize('NFD', unicodify(s))
+    s = u.encode('us-ascii', 'ignore')
+    return unicodify(s)
+
+
 def parse_date(datestr):
     """Parse a Zotero date into YYYY-MM-DD, YYYY-MM or YYYY format.
 
@@ -203,6 +219,19 @@ def json_serialise(obj):
     if isinstance(obj, date):
         return obj.isoformat()
     raise TypeError('Type %s is not serialisable' % type(obj))
+
+
+_subunsafe = re.compile(r'[^a-z0-9\.-]').sub
+
+_subdashes = re.compile(r'-+').sub
+
+
+def safename(name):
+    """Make a name filesystem-safe."""
+    name = asciify(name).lower()
+    name = _subunsafe('-', name)
+    name = _subdashes('-', name)
+    return unicodify(name)
 
 
 def shortpath(p):

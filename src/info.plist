@@ -20,6 +20,16 @@
 			</dict>
 			<dict>
 				<key>destinationuid</key>
+				<string>1CA1CA5F-6531-4BE6-8FA9-734C04C5EF4B</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>destinationuid</key>
 				<string>7123D0FE-B9BA-4300-9D28-410EE7B10E56</string>
 				<key>modifiers</key>
 				<integer>0</integer>
@@ -52,11 +62,11 @@
 				<false/>
 			</dict>
 		</array>
-		<key>2B20149E-1275-476A-9CAA-254CB2DC74E0</key>
+		<key>1CA1CA5F-6531-4BE6-8FA9-734C04C5EF4B</key>
 		<array>
 			<dict>
 				<key>destinationuid</key>
-				<string>8C9BC8AD-88E5-4822-A2D6-FE177D87AF64</string>
+				<string>ED06F3FD-4D96-4866-9EEC-11B64FB6D558</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -64,9 +74,12 @@
 				<key>vitoclose</key>
 				<false/>
 			</dict>
+		</array>
+		<key>2B20149E-1275-476A-9CAA-254CB2DC74E0</key>
+		<array>
 			<dict>
 				<key>destinationuid</key>
-				<string>A966EACB-331B-488E-937C-5D8DE7767B9D</string>
+				<string>8C9BC8AD-88E5-4822-A2D6-FE177D87AF64</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -168,19 +181,6 @@
 				<string></string>
 				<key>vitoclose</key>
 				<true/>
-			</dict>
-		</array>
-		<key>5B8743DC-92EC-44FD-B6A5-1120B9B9DFAE</key>
-		<array>
-			<dict>
-				<key>destinationuid</key>
-				<string>8F85FB21-8921-402F-BF70-C7C35E769212</string>
-				<key>modifiers</key>
-				<integer>0</integer>
-				<key>modifiersubtext</key>
-				<string></string>
-				<key>vitoclose</key>
-				<false/>
 			</dict>
 		</array>
 		<key>65A74884-90D6-4453-963E-454CF4C84DCB</key>
@@ -287,11 +287,37 @@
 				<true/>
 			</dict>
 		</array>
+		<key>8C9BC8AD-88E5-4822-A2D6-FE177D87AF64</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>A966EACB-331B-488E-937C-5D8DE7767B9D</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
 		<key>9A384EEE-AA82-4FC5-8B13-1F7319613854</key>
 		<array>
 			<dict>
 				<key>destinationuid</key>
 				<string>2F6636A4-F41B-4D28-9AF3-754CE5B9975A</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>A950947F-8EA7-4749-AF55-2C7F9D6E695E</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>5CF4D2DC-E6C6-4E4D-BB75-9D96C7C02203</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -366,7 +392,7 @@
 		<array>
 			<dict>
 				<key>destinationuid</key>
-				<string>5B8743DC-92EC-44FD-B6A5-1120B9B9DFAE</string>
+				<string>8F85FB21-8921-402F-BF70-C7C35E769212</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -393,6 +419,19 @@
 			<dict>
 				<key>destinationuid</key>
 				<string>385AA15F-F7CF-440F-8567-48FD0CBCDC85</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>ED06F3FD-4D96-4866-9EEC-11B64FB6D558</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>65A74884-90D6-4453-963E-454CF4C84DCB</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -869,14 +908,6 @@ variables={allvars}
 			<integer>1</integer>
 		</dict>
 		<dict>
-			<key>type</key>
-			<string>alfred.workflow.utility.hidealfred</string>
-			<key>uid</key>
-			<string>5B8743DC-92EC-44FD-B6A5-1120B9B9DFAE</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
 			<key>config</key>
 			<dict>
 				<key>inputstring</key>
@@ -924,13 +955,17 @@ variables={allvars}
 				<key>escaping</key>
 				<integer>102</integer>
 				<key>script</key>
-				<string>./zh copy "$style" "$id"</string>
+				<string>flags=()
+
+test -n "$bibliography" &amp;&amp; flags+=(--bibliography)
+
+./zh copy $flags "$style" "$id"</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
 				<string></string>
 				<key>type</key>
-				<integer>0</integer>
+				<integer>5</integer>
 			</dict>
 			<key>type</key>
 			<string>alfred.workflow.action.script</string>
@@ -975,9 +1010,9 @@ variables={allvars}
 				<key>removeextension</key>
 				<false/>
 				<key>text</key>
-				<string>{var:stylename}</string>
+				<string>{var:notifytext}</string>
 				<key>title</key>
-				<string>Changed default for {var:modkey}</string>
+				<string>{var:notifytitle}</string>
 			</dict>
 			<key>type</key>
 			<string>alfred.workflow.output.notification</string>
@@ -1015,6 +1050,14 @@ variables={allvars}
 			<string>alfred.workflow.utility.filter</string>
 			<key>uid</key>
 			<string>3D2145B0-1260-41B9-9EC1-A78EB5CA2400</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>type</key>
+			<string>alfred.workflow.utility.hidealfred</string>
+			<key>uid</key>
+			<string>5CF4D2DC-E6C6-4E4D-BB75-9D96C7C02203</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
@@ -1232,6 +1275,70 @@ variables={allvars}
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string></string>
+				<key>script</key>
+				<string>./zh locale "$1"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string></string>
+				<key>title</key>
+				<string></string>
+				<key>type</key>
+				<integer>5</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>ED06F3FD-4D96-4866-9EEC-11B64FB6D558</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>inputstring</key>
+				<string>{var:action}</string>
+				<key>matchcasesensitive</key>
+				<true/>
+				<key>matchmode</key>
+				<integer>0</integer>
+				<key>matchstring</key>
+				<string>choose-locale</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.utility.filter</string>
+			<key>uid</key>
+			<string>1CA1CA5F-6531-4BE6-8FA9-734C04C5EF4B</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>browser</key>
 				<string></string>
 				<key>spaces</key>
@@ -1314,25 +1421,6 @@ variables={allvars}
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>inputstring</key>
-				<string>{var:action}</string>
-				<key>matchcasesensitive</key>
-				<true/>
-				<key>matchmode</key>
-				<integer>0</integer>
-				<key>matchstring</key>
-				<string>reload</string>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.utility.filter</string>
-			<key>uid</key>
-			<string>E1E3A9E7-0EEF-4745-A62C-79E46A2AF51F</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
 				<key>externaltriggerid</key>
 				<string>config</string>
 				<key>passinputasargument</key>
@@ -1346,6 +1434,25 @@ variables={allvars}
 			<string>alfred.workflow.output.callexternaltrigger</string>
 			<key>uid</key>
 			<string>A966EACB-331B-488E-937C-5D8DE7767B9D</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>inputstring</key>
+				<string>{var:action}</string>
+				<key>matchcasesensitive</key>
+				<true/>
+				<key>matchmode</key>
+				<integer>0</integer>
+				<key>matchstring</key>
+				<string>reload</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.utility.filter</string>
+			<key>uid</key>
+			<string>E1E3A9E7-0EEF-4745-A62C-79E46A2AF51F</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
@@ -1368,7 +1475,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>830</integer>
 			<key>ypos</key>
-			<integer>1100</integer>
+			<integer>1290</integer>
 		</dict>
 		<key>118BDCA4-C25F-449C-93D8-877E192E22D2</key>
 		<dict>
@@ -1384,6 +1491,15 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>ypos</key>
 			<integer>920</integer>
 		</dict>
+		<key>1CA1CA5F-6531-4BE6-8FA9-734C04C5EF4B</key>
+		<dict>
+			<key>note</key>
+			<string>$action = choose-locale</string>
+			<key>xpos</key>
+			<integer>700</integer>
+			<key>ypos</key>
+			<integer>1140</integer>
+		</dict>
 		<key>27AB4926-3249-4A80-85B5-6176911ACE7D</key>
 		<dict>
 			<key>xpos</key>
@@ -1398,7 +1514,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>830</integer>
 			<key>ypos</key>
-			<integer>1270</integer>
+			<integer>1460</integer>
 		</dict>
 		<key>2C059A51-AE82-49BA-A5E9-13824D15C4EC</key>
 		<dict>
@@ -1459,12 +1575,12 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>ypos</key>
 			<integer>50</integer>
 		</dict>
-		<key>5B8743DC-92EC-44FD-B6A5-1120B9B9DFAE</key>
+		<key>5CF4D2DC-E6C6-4E4D-BB75-9D96C7C02203</key>
 		<dict>
 			<key>xpos</key>
-			<integer>870</integer>
+			<integer>480</integer>
 			<key>ypos</key>
-			<integer>590</integer>
+			<integer>760</integer>
 		</dict>
 		<key>5D1E28B8-C1D6-495B-856F-F48C59150FE0</key>
 		<dict>
@@ -1505,7 +1621,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>700</integer>
 			<key>ypos</key>
-			<integer>1130</integer>
+			<integer>1320</integer>
 		</dict>
 		<key>7D722132-9CB1-4556-B401-5A32F089CB28</key>
 		<dict>
@@ -1549,14 +1665,14 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 		<key>8C9BC8AD-88E5-4822-A2D6-FE177D87AF64</key>
 		<dict>
 			<key>xpos</key>
-			<integer>1040</integer>
+			<integer>1000</integer>
 			<key>ypos</key>
-			<integer>1270</integer>
+			<integer>1460</integer>
 		</dict>
 		<key>8F85FB21-8921-402F-BF70-C7C35E769212</key>
 		<dict>
 			<key>xpos</key>
-			<integer>1040</integer>
+			<integer>830</integer>
 			<key>ypos</key>
 			<integer>560</integer>
 		</dict>
@@ -1581,9 +1697,9 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 		<key>A966EACB-331B-488E-937C-5D8DE7767B9D</key>
 		<dict>
 			<key>xpos</key>
-			<integer>1040</integer>
+			<integer>1170</integer>
 			<key>ypos</key>
-			<integer>1420</integer>
+			<integer>1460</integer>
 		</dict>
 		<key>AB53FBF0-1EC6-43BE-96BA-A30A9E6E9B66</key>
 		<dict>
@@ -1649,7 +1765,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>700</integer>
 			<key>ypos</key>
-			<integer>1300</integer>
+			<integer>1490</integer>
 		</dict>
 		<key>E703B0EC-921B-453A-A32F-14FDBFA54980</key>
 		<dict>
@@ -1659,6 +1775,15 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<integer>1420</integer>
 			<key>ypos</key>
 			<integer>950</integer>
+		</dict>
+		<key>ED06F3FD-4D96-4866-9EEC-11B64FB6D558</key>
+		<dict>
+			<key>note</key>
+			<string>Choose locale</string>
+			<key>xpos</key>
+			<integer>830</integer>
+			<key>ypos</key>
+			<integer>1110</integer>
 		</dict>
 		<key>F41A047D-DC74-4085-AD36-E52EDD909FBD</key>
 		<dict>
@@ -1681,15 +1806,15 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 	<dict>
 		<key>ATTACHMENTS_DIR</key>
 		<string></string>
-		<key>CITE_CMD</key>
+		<key>CITE_STYLE</key>
 		<string></string>
-		<key>CITE_OPT</key>
+		<key>LOCALE</key>
 		<string></string>
 		<key>ZOTERO_DIR</key>
 		<string></string>
 	</dict>
 	<key>version</key>
-	<string>0.1.3-beta</string>
+	<string>0.1.4-beta</string>
 	<key>webaddress</key>
 	<string>https://github.com/deanishe/zothero</string>
 </dict>
