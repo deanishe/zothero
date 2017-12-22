@@ -88,6 +88,7 @@ class HTMLText(HTMLParser):
         return unicode(p)
 
     def __init__(self):
+        """Create new HTMLText."""
         self.reset()
         self.data = []
 
@@ -106,6 +107,18 @@ class HTMLText(HTMLParser):
     def __unicode__(self):
         """Return text as Unicode."""
         return u''.join(self.data)
+
+
+def strip_tags(html):
+    """Strip tags from HTML.
+
+    Args:
+        html (unicode): HTML text.
+
+    Returns:
+        unicode: Text contained in HTML.
+    """
+    return HTMLText.strip(html)
 
 
 def copyifnewer(source, copy):

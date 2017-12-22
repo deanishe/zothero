@@ -7,7 +7,7 @@
 # Created on 2017-12-15
 #
 
-"""Core classes and functions representing the main zothero API."""
+"""Main ZotHero API."""
 
 from __future__ import print_function, absolute_import
 

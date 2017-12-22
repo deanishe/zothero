@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # encoding: utf-8
 #
 # Copyright (c) 2017 Dean Jackson <deanishe@deanishe.net>
@@ -27,6 +26,7 @@ from .models import CSLStyle
 from .util import safename, shortpath, unicodify
 
 log = logging.getLogger(__name__)
+log.addHandler(logging.NullHandler())
 
 
 # CSL stylesheet namespace

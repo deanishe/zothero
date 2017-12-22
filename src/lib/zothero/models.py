@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# encoding: utf-8
 #
 # Copyright (c) 2017 Dean Jackson <deanishe@deanishe.net>
 #
@@ -19,6 +17,7 @@ from .util import json_serialise, utf8encode
 
 
 log = logging.getLogger(__name__)
+log.addHandler(logging.NullHandler())
 
 
 class AttrDict(dict):
@@ -79,7 +78,6 @@ class Entry(AttrDict):
         type (unicode): The type of Entry, e.g. "journalArticle".
         creators (list): Sequence of `Creator` objects.
         zdata (dict): All Zotero data using unprocessed keys and values.
-        csl (dict): CSL data for exporting to CSL JSON.
         collections (list): `Collection` objects the Entry belongs to.
         tags (list): Unicode tags belonging to Entry.
         attachments (list): Sequence of `Attachment` objects.
@@ -102,22 +100,65 @@ class Entry(AttrDict):
         return e
 
     def __init__(self, *args, **kwargs):
+        """Create new `Entry`.
+
+        Args:
+            *args: Optional initialisation data. As for `dict`.
+            **kwargs: Optional initialisation data. As for `dict`.
+        """
         super(Entry, self).__init__(*args, **kwargs)
 
     @property
     def authors(self):
-        """Creators whose type is ``author``."""
+        """Creators whose type is ``author``.
+
+        Returns:
+            list: Sequence of `Creator` objects.
+        """
         return [c for c in self.creators if c.type == 'author']
 
     @property
     def editors(self):
-        """Creators whose type is ``editor``."""
+        """Creators whose type is ``editor``.
+
+        Returns:
+            list: Sequence of `Creator` objects.
+        """
         return [c for c in self.creators if c.type == 'editor']
 
+    @property
+    def csl(self):
+        """CSL data for `Entry` for converting to CSL-JSON.
+
+        Returns:
+            dict: Entry data converted to CSL types.
+        """
+        from .csl import entry_data
+        return entry_data(self)
+
+    @property
+    def csljson(self):
+        """CSL-JSON for `Entry`.
+
+        Returns:
+            str: JSON array containing CSL data for one `Entry`.
+        """
+        return json.dumps([self.csl], indent=2, sort_keys=True)
+
     def __str__(self):
+        """Title, year and author(s) of `Entry`.
+
+        Returns:
+            str: UTF8-encoded string.
+        """
         return unicode(self).encode('utf-8', 'replace')
 
     def __unicode__(self):
+        """Title, year and author(s) of `Entry`.
+
+        Returns:
+            unicode: Description of `Entry`.
+        """
         s = self.title
         if self.year:
             s += u' ({})'.format(self.year)
@@ -130,7 +171,11 @@ class Entry(AttrDict):
         return s
 
     def json(self):
-        """Serialise `Entry` to JSON."""
+        """Serialise `Entry` to JSON.
+
+        Returns:
+            str: JSON-encoded `Entry`.
+        """
         return json.dumps(self, indent=2, sort_keys=True,
                           default=json_serialise)
 
@@ -150,7 +195,12 @@ class Attachment(AttrDict):
     """
 
     def __init__(self, *args, **kwargs):
-        """Create new `Attachment` object."""
+        """Create new `Attachment` object.
+
+        Args:
+            *args: Optional initialisation data. As for `dict`.
+            **kwargs: Optional initialisation data. As for `dict`.
+        """
         super(Attachment, self).__init__(*args, **kwargs)
 
 
@@ -164,7 +214,12 @@ class Collection(AttrDict):
     """
 
     def __init__(self, *args, **kwargs):
-        """Create new `Collection` object."""
+        """Create new `Collection` object.
+
+        Args:
+            *args: Optional initialisation data. As for `dict`.
+            **kwargs: Optional initialisation data. As for `dict`.
+        """
         super(Collection, self).__init__(*args, **kwargs)
 
 
@@ -180,7 +235,12 @@ class Creator(AttrDict):
     """
 
     def __init__(self, *args, **kwargs):
-        """Create new `Creator` object."""
+        """Create new `Creator` object.
+
+        Args:
+            *args: Optional initialisation data. As for `dict`.
+            **kwargs: Optional initialisation data. As for `dict`.
+        """
         super(Creator, self).__init__(*args, **kwargs)
 
 
@@ -202,7 +262,12 @@ class CSLStyle(AttrDict):
         return cls(json.loads(js))
 
     def __init__(self, *args, **kwargs):
-        """Create a new style."""
+        """Create a new style.
+
+        Args:
+            *args: Optional initialisation data. As for `dict`.
+            **kwargs: Optional initialisation data. As for `dict`.
+        """
         super(CSLStyle, self).__init__(*args, **kwargs)
 
     @property

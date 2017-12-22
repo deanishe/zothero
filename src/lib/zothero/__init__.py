@@ -12,8 +12,6 @@
 from __future__ import print_function, absolute_import
 from .core import ZotHero
 
-# These global variables are populated by `zq` when it runs.
-# Not a best practice, but it saves having to pass a Context
-# around everywhere.
+# Populated by `zh` when it runs. Not a best practice, but it saves
+# having to pass a Context around everywhere.
 app = None
-wf = None

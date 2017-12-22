@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # encoding: utf-8
 #
 # Copyright (c) 2017 Dean Jackson <deanishe@deanishe.net>
@@ -8,18 +7,14 @@
 # Created on 2017-12-20
 #
 
-"""
-"""
+"""Put multiple data formats on the macOS pasteboard at the same time."""
 
 from __future__ import print_function, absolute_import
-
-import os
-import sys
 
 from AppKit import NSPasteboard
 from Foundation import NSData
 
-
+# Some common UTIs
 UTI_HTML = 'public.html'
 UTI_TEXT = 'public.rtf'
 UTI_PLAIN = 'public.utf8-plain-text'

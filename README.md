@@ -5,18 +5,41 @@
 ZotHero
 =======
 
-Alfred 3 workflow for searching your Zotero database and copying citations.
+[Alfred][alfred] workflow for rapidly searching your Zotero database and copying citations.
 
 <!-- MarkdownTOC autolink="true" bracket="round" depth="3" autoanchor="true" -->
 
+- [Features](#features)
+- [Download & installation](#download--installation)
 - [Usage](#usage)
 - [Configuration](#configuration)
     - [Zotero data](#zotero-data)
     - [Citation styles](#citation-styles)
+    - [Locales](#locales)
     - [All settings](#all-settings)
+    - [Configuration sheet](#configuration-sheet)
 - [Licence & thanks](#licence--thanks)
 
 <!-- /MarkdownTOC -->
+
+
+<a name="features"></a>
+Features
+--------
+
+- Perform full-text search across your Zotero database, including only searching specific fields
+- Copy citations using any [CSL][csl] style you have installed in Zotero
+- Copy citations either in citation/note style or bibliography style
+- Copy citations in any [locale supported by CSL](#locales)
+- Citations are copied in multiple formats, so the right data are automatically pasted into the application you're using
+
+
+<a name="download--installation"></a>
+Download & installation
+-----------------------
+
+Download the `ZotHero-XYZ.alfredworkflow` file from [GitHub releases](https://github.com/deanishe/zothero/releases), and double-click the downloaded file to install.
+
 
 <a name="usage"></a>
 Usage
@@ -59,6 +82,8 @@ If you data are stored somewhere else, you need to set `ZOTERO_DIR` in the [work
 
 If you have set a "Linked Attachment Base Directory" in Zotero, enter its path for `ATTACHMENTS_DIR` in the [configuration sheet][conf-sheet].
 
+**Note**: You can use the UNIX shortcut `~` to represent your home directory, e.g. `~/Zotero` for Zotero 5's default directory.
+
 
 <a name="citation-styles"></a>
 ### Citation styles ###
@@ -70,6 +95,67 @@ You can copy either a citation-/note-style citation or a bibliography-style one 
 For `⌘↩` and `⌥↩` to work on search results, you must first choose a default style. You can either do this in the configuration screen (keyword `zotconf`), or hitting `^↩` on a search result to show all citation styles, then `^↩` on a style to set that as the default.
 
 
+<a name="locales"></a>
+### Locales ###
+
+[CSL][csl] and ZotHero support the following locales. The default locale is `en-US` (American English). Use the `zotconf` keyword to set a different locale.
+
+|                    Locale                    |   Code  |
+|----------------------------------------------|---------|
+| Afrikaans                                    | `af-ZA` |
+| Bahasa Indonesia / Indonesian                | `id-ID` |
+| Català / Catalan                             | `ca-AD` |
+| Cymraeg / Welsh                              | `cy-GB` |
+| Dansk / Danish                               | `da-DK` |
+| Deutsch (Deutschland) / German (Germany)     | `de-DE` |
+| Deutsch (Schweiz) / German (Switzerland)     | `de-CH` |
+| Deutsch (Österreich) / German (Austria)      | `de-AT` |
+| Eesti / Estonian                             | `et-EE` |
+| English (UK)                                 | `en-GB` |
+| English (US)                                 | `en-US` |
+| Español (Chile) / Spanish (Chile)            | `es-CL` |
+| Español (España) / Spanish (Spain)           | `es-ES` |
+| Español (México) / Spanish (Mexico)          | `es-MX` |
+| Euskara / Basque                             | `eu`    |
+| Français (Canada) / French (Canada)          | `fr-CA` |
+| Français (France) / French (France)          | `fr-FR` |
+| Hrvatski / Croatian                          | `hr-HR` |
+| Italiano / Italian                           | `it-IT` |
+| Latviešu / Latvian                           | `lv-LV` |
+| Lietuvių / Lithuanian                        | `lt-LT` |
+| Magyar / Hungarian                           | `hu-HU` |
+| Nederlands / Dutch                           | `nl-NL` |
+| Norsk bokmål / Norwegian (Bokmål)            | `nb-NO` |
+| Norsk nynorsk / Norwegian (Nynorsk)          | `nn-NO` |
+| Polski / Polish                              | `pl-PL` |
+| Português (Brasil) / Portuguese (Brazil)     | `pt-BR` |
+| Português (Portugal) / Portuguese (Portugal) | `pt-PT` |
+| Română / Romanian                            | `ro-RO` |
+| Slovenčina / Slovak                          | `sk-SK` |
+| Slovenščina / Slovenian                      | `sl-SI` |
+| Suomi / Finnish                              | `fi-FI` |
+| Svenska / Swedish                            | `sv-SE` |
+| Tiếng Việt / Vietnamese                      | `vi-VN` |
+| Türkçe / Turkish                             | `tr-TR` |
+| Íslenska / Icelandic                         | `is-IS` |
+| Čeština / Czech                              | `cs-CZ` |
+| Ελληνικά / Greek                             | `el-GR` |
+| Български / Bulgarian                        | `bg-BG` |
+| Монгол / Mongolian                           | `mn-MN` |
+| Русский / Russian                            | `ru-RU` |
+| Српски / Srpski / Serbian                    | `sr-RS` |
+| Українська / Ukrainian                       | `uk-UA` |
+| עברית / Hebrew                               | `he-IL` |
+| العربية / Arabic                             | `ar`    |
+| فارسی / Persian                              | `fa-IR` |
+| ไทย / Thai                                   | `th-TH` |
+| ភាសាខ្មែរ / Khmer                            | `km-KH` |
+| 中文 (中国大陆) / Chinese (PRC)              | `zh-CN` |
+| 中文 (台灣) / Chinese (Taiwan)               | `zh-TW` |
+| 日本語 / Japanese                            | `ja-JP` |
+| 한국어 / Korean                              | `ko-KR` |
+
+
 <a name="all-settings"></a>
 ### All settings ###
 
@@ -78,12 +164,29 @@ Theses are all settings available in the [workflow configuration sheet][conf-she
 You probably shouldn't edit the `CITE_STYLE` or `LOCALE` variables yourself, as there's no guarantee the value you set is actually available. Adjust them using the `zotconf` keyword.
 
 
-|      Variable     |                  Meaning                   |
-|-------------------|--------------------------------------------|
-| `ATTACHMENTS_DIR` | Path to your Zotero attachments.           |
-| `CITE_STYLE`      | Citation style copied by `⌘↩` and `⌥↩`     |
-| `LOCALE`          | Locale for citations. Default: US English. |
-| `ZOTERO_DIR`      | Path to your Zotero data.                  |
+|      Variable     |                       Meaning                        |
+|-------------------|------------------------------------------------------|
+| `ATTACHMENTS_DIR` | Path to your Zotero attachments.                     |
+| `CITE_STYLE`      | Citation style copied by `⌘↩` and `⌥↩`               |
+| `LOCALE`          | Locale for citations. Default: `en-US` (US English). |
+| `ZOTERO_DIR`      | Path to your Zotero data.                            |
+|                   |                                                      |
+
+
+<a name="configuration-sheet"></a>
+### Configuration sheet ###
+
+Theses are all settings available in the [workflow configuration sheet][conf-sheet].
+
+You probably shouldn't edit the `CITE_STYLE` or `LOCALE` variables yourself, as there's no guarantee the value you set is actually available. Adjust them using the `zotconf` keyword.
+
+
+|      Variable     |                       Meaning                        |
+|-------------------|------------------------------------------------------|
+| `ATTACHMENTS_DIR` | Path to your Zotero attachments.                     |
+| `CITE_STYLE`      | Citation style copied by `⌘↩` and `⌥↩`               |
+| `LOCALE`          | Locale for citations. Default: `en-US` (US English). |
+| `ZOTERO_DIR`      | Path to your Zotero data.                            |
 
 
 <a name="licence--thanks"></a>
@@ -98,11 +201,14 @@ The [Zorro icon][icon-source] was created by [Dan Lowenstein][lowenstein] from [
 
 
 
+[alfred]: https://www.alfredapp.com/
 [aw]: http://www.deanishe.net/alfred-workflow/
-[citeproc-ruby]: https://github.com/inukshuk/citeproc-ruby
 [citeproc-licence]: https://github.com/inukshuk/citeproc-ruby/blob/master/AGPL
+[citeproc-ruby]: https://github.com/inukshuk/citeproc-ruby
 [conf-sheet]: https://www.alfredapp.com/help/workflows/advanced/variables/#environment
+[csl]: http://citationstyles.org
 [icon-source]: https://thenounproject.com/term/zorro/14540/
-[lowenstein]: https://thenounproject.com/danny_mustache
 [licence]: ./LICENCE
+[lowenstein]: https://thenounproject.com/danny_mustache
 [noun-project]: https://thenounproject.com
+[releases]: https://github.com/deanishe/zothero/releases

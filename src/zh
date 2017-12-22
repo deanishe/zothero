@@ -13,21 +13,24 @@
 ZotHero - Alfred workflow for Zotero.
 
 Usage:
-    zh search <query>
-    zh fields [<query>]
     zh attachments <id> [<query>]
     zh citations <id> [<query>]
-    zh copy [--bibliography] <style> <id>
-    zh config [<query>]
-    zh locale [<query>]
-    zh select [--style <key>] [<query>]
     zh clear
+    zh config [<query>]
+    zh copy [--bibliography] <style> <id>
+    zh fields [<query>]
+    zh locale [<query>]
+    zh notify [--title <msg>] [--text <msg>]
     zh reindex
+    zh search <query>
+    zh select [--style <key>] [<query>]
     zh --help
 
 Options:
     -b, --bibliography            Copy bibliography-style citation.
     -s <key>, --style=<key>       The currently-selected style.
+    --title=<msg>                 Notification title.
+    --text=<msg>                  Notification text.
     -h, --help                    Show this message and exit.
 
 """
@@ -51,12 +54,11 @@ log = None
 CITE_STYLE = os.getenv('CITE_STYLE')
 # User's preferred locale for citations
 LOCALE = os.getenv('LOCALE')
-VERSION = os.getenv('alfred_workflow_version') or ''
 
 # GitHub repo to check for updates
 UPDATE_SETTINGS = {
     'github_slug': 'deanishe/zothero',
-    'prereleases': '-beta' in VERSION,
+    'prereleases': '-beta' in (os.getenv('alfred_workflow_version') or ''),
 }
 
 # URLs for help & docs
@@ -64,6 +66,7 @@ URL_ISSUES = 'https://github.com/deanishe/zothero/issues'
 URL_DOCS = 'https://github.com/deanishe/zothero/blob/master/README.md'
 
 # Workflow icons
+ICON_CITATION = 'icons/citation.png'
 ICON_DOCS = 'icons/docs.png'
 ICON_HELP = 'icons/help.png'
 ICON_ISSUE = 'icons/issue.png'
@@ -263,6 +266,7 @@ def do_citations(query, entry_id):
             s.name,
             u'Copy citation for "%s"' % e.title,
             arg=s.key,
+            icon=ICON_CITATION,
             valid=True,
         )
         it.setvar('id', entry_id)
@@ -270,9 +274,9 @@ def do_citations(query, entry_id):
         it.setvar('style', s.key)
 
         mod = it.add_modifier('cmd',
-                              u'Copy citation for "%s"' % e.title)
+                              u'Copy citation for “%s”' % e.title)
         mod = it.add_modifier('alt',
-                              u'Copy bibliography for "%s"' % e.title)
+                              u'Copy bibliography for “%s”' % e.title)
         mod.setvar('bibliography', '1')
 
         if s.key != CITE_STYLE:
@@ -282,7 +286,11 @@ def do_citations(query, entry_id):
             mod.setvar('action', 'set-default')
             mod.setvar('next', 'citations')
             # For notification
-            mod.setvar('stylename', s.name)
+            mod.setvar('notifytitle', 'Changed Default Style')
+            mod.setvar('notifytext', s.name)
+        else:
+            mod = it.add_modifier('ctrl', u'This is the default style',
+                                  valid=False)
 
     wf.warn_empty('No Matching Styles', 'Try a different query?')
     wf.send_feedback()
@@ -464,6 +472,7 @@ def do_select(query, style_key):
                          valid=valid,
                          icon=icon)
         it.setvar('varval', s.key)
+        # For notification
         it.setvar('notifytitle', 'Changed Default Style')
         it.setvar('notifytext', s.name)
         # Alfred doesn't notice changes fast enough, so turn this off
@@ -499,6 +508,7 @@ def do_locale(query):
                          valid=valid,
                          icon=icon)
         it.setvar('varval', l.code)
+        # For notification
         it.setvar('notifytitle', 'Changed Locale')
         it.setvar('notifytext', l.name)
         # Alfred doesn't notice changes fast enough, so turn this off
@@ -511,11 +521,18 @@ def do_locale(query):
 
 def do_clear():
     """Remove cached data."""
+    from workflow import Variables
+
     def _deleteme(fn):
         x = os.path.splitext(fn)[1]
         return x.lower() in ('.sqlite', '.csl')
 
     wf.clear_cache(_deleteme)
+
+    print(Variables(
+        notifytitle=u'Cache Cleared',
+        notifytext=u'Zotero database will be reloaded on next run',
+    ))
 
 
 def do_reindex():
@@ -527,15 +544,44 @@ def do_reindex():
     app.update_index(force=True)
 
 
+def do_notify(title, text):
+    """Post a macOS notification.
+
+    Does nothing if both ``title`` and ``text`` are empty.
+
+    Args:
+        title (unicode): Title for the notification.
+        text (unicode): Text for the notification.
+    """
+    from workflow.notify import notify
+
+    if not title and not text:
+        log.debug('ignoring empty notification')
+        return
+
+    title = title or u'ZotHero'
+    text = text or u''
+
+    log.debug('[notification] title=%r, text=%r', title, text)
+    notify(title, text)
+
+
 def main(wf):
     """Run workflow."""
     import zothero
 
     wf.args  # call to ensure any magic arguments are intercepted
-    args = docopt(__doc__)
-    query = wf.decode(args.get('<query>') or '')
-    entry_id = int(args['<id>']) if args['<id>'] else None
+    args = docopt(__doc__, version=wf.version)
+    # Ensure any string arguments are Unicode
+    for k, v in args.items():
+        if isinstance(v, str):
+            args[k] = wf.decode(v)
+
     log.debug('args=%r', args)
+
+    # Common parameters
+    query = args.get('<query>')
+    entry_id = int(args['<id>']) if args['<id>'] else None
 
     # Zotero data directories
     datadir = os.getenv('ZOTERO_DIR') or None
@@ -571,6 +617,9 @@ def main(wf):
 
     if args['locale']:
         return do_locale(query)
+
+    if args['notify']:
+        return do_notify(args['--title'], args['--text'])
 
     if args['reindex']:
         return do_reindex()

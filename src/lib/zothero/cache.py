@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # encoding: utf-8
 #
 # Copyright (c) 2016 Dean Jackson <deanishe@deanishe.net>
@@ -10,14 +9,13 @@
 
 """Simple key-value store based on sqlite3.
 
-Data is stored via sub-objects assigned to each table.
+Data is stored via `Store` sub-objects assigned to each table.
 """
 
 from __future__ import print_function, absolute_import
 
 
 from contextlib import contextmanager
-from datetime import datetime
 import logging
 import os
 import re
@@ -26,6 +24,7 @@ import time
 
 
 log = logging.getLogger(__name__)
+log.addHandler(logging.NullHandler())
 
 # Create a new database
 SQL_SCHEMA = u"""

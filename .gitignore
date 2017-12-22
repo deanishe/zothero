@@ -1,11 +1,4 @@
 
-# Dependencies
-/src/lib/workflow/
-/src/lib/lxml/
-/src/lib/docopt.py
-/src/lib/rtfunicode.py
-/src/lib/citeproc/
-
 # Created by https://www.gitignore.io/api/python,sublimetext,vim
 
 ### Python ###

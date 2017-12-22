@@ -1,6 +1,6 @@
 # Icons from webfonts via http://icons.deanishe.net
 #
-# Script ../bin/icons reads this file and downloads the
+# Script ../../bin/icons reads this file and downloads the
 # specified icons to this directory.
 #
 # Colours
@@ -8,17 +8,19 @@
 # yellow: F8AC30
 # red:    B00000
 # green:  03AE03
+# purple: 521285
 #
 
-# filename        font name       colour    icon name
+# filename         font name       colour    icon name
 
-docs              material        5485F3    help
-help              material        03AE03    help
-issue             fontawesome     F8AC30    bug
-locale            material        5485F3    globe-alt
-log               fontawesome     03AE03    file
-off               fontawesome     B00000    circle-o
-on                fontawesome     03AE03    dot-circle-o
-reload            fontawesome     F8AC30    refresh
-update-available  material        F8AC30    cloud-download
-update-ok         material        03AE03    cloud-done
+docs               material        5485F3    help
+help               material        03AE03    help
+issue              fontawesome     F8AC30    bug
+locale             material        5485F3    globe-alt
+log                fontawesome     03AE03    file
+off                fontawesome     B00000    circle-o
+on                 fontawesome     03AE03    dot-circle-o
+reload             fontawesome     F8AC30    refresh
+update-available   material        F8AC30    cloud-download
+update-ok          material        03AE03    cloud-done
+citation           fontawesome     521285    quote-right

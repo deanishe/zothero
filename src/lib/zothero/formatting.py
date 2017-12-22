@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # encoding: utf-8
 #
 # Copyright (c) 2017 Dean Jackson <deanishe@deanishe.net>
@@ -8,13 +7,14 @@
 # Created on 2017-12-16
 #
 
-"""Formatting classes & functions for citations etc."""
+"""Format `models.Entry` for display."""
 
 from __future__ import print_function, absolute_import
 
 import logging
 
 log = logging.getLogger(__name__)
+log.addHandler(logging.NullHandler())
 
 
 class EntryFormatter(object):

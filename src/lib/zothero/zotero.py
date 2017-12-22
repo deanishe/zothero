@@ -24,8 +24,6 @@ import logging
 import os
 import sqlite3
 
-from . import csl
-
 from .models import (
     Entry,
     Attachment,
@@ -35,25 +33,19 @@ from .models import (
 
 from .util import (
     dt2sqlite,
-    HTMLText,
     parse_date,
     shortpath,
+    strip_tags,
     sqlite2dt,
     time_since,
 )
 
 
 log = logging.getLogger(__name__)
-
-# Accepted extensions for attachments
-# ATTACHMENT_EXTS = {
-#     '.doc',
-#     '.docx',
-#     '.epub',
-#     '.pdf',
-# }
+log.addHandler(logging.NullHandler())
 
 
+# Retrieve all items, excluding notes and attachments
 ITEMS_SQL = u"""
 SELECT  items.itemID AS id,
         items.dateModified AS modified,
@@ -70,6 +62,7 @@ WHERE items.itemTypeID not IN (1, 14)
 AND deletedItems.dateDeleted IS NULL
 """
 
+# Retrieve creators for a given item
 CREATORS_SQL = u"""
 SELECT  creators.firstName AS given,
         creators.lastName AS family,
@@ -84,6 +77,7 @@ WHERE itemCreators.itemID = ?
 ORDER BY `index` ASC
 """
 
+# Retrieve collections for a given item
 COLLECTIONS_SQL = u"""
 SELECT  collections.collectionName AS name,
         collections.key AS key
@@ -93,6 +87,7 @@ SELECT  collections.collectionName AS name,
 WHERE collectionItems.itemID = ?
 """
 
+# Retrieve attachments for a given item
 ATTACHMENTS_SQL = u"""
 SELECT
     items.key AS key,
@@ -119,7 +114,7 @@ FROM itemAttachments
 WHERE itemAttachments.parentItemID = ?
 """
 
-# Return ID of items whose attachments have been modified
+# Retrieve IDs of items whose attachments have been modified
 MODIFIED_ATTACHMENTS_SQL = u"""
 SELECT  (SELECT items.key
             FROM items
@@ -133,6 +128,7 @@ AND items.dateModified > ?
 GROUP BY itemAttachments.parentItemID
 """
 
+# Retrieve all data for given item
 METADATA_SQL = u"""
 SELECT  fields.fieldName AS name,
         itemDataValues.value AS value
@@ -144,6 +140,7 @@ SELECT  fields.fieldName AS name,
 WHERE itemData.itemID = ?
 """
 
+# Retrieve notes for given item
 NOTES_SQL = u"""
 SELECT itemNotes.note AS note
     FROM itemNotes
@@ -152,6 +149,7 @@ SELECT itemNotes.note AS note
 WHERE itemNotes.parentItemID = ?
 """
 
+# Retrieve tags for given item
 TAGS_SQL = u"""
 SELECT tags.name AS name
     FROM tags
@@ -240,10 +238,7 @@ class Zotero(object):
         if not row:
             return None
 
-        e = Entry(**row)
-        self._populate_entry(e)
-
-        return e
+        return self._load_entry(row)
 
     def modified_since(self, dt):
         """Iterate Entries modified since datetime."""
@@ -262,13 +257,11 @@ class Zotero(object):
     def all_entries(self):
         """Return all database entries."""
         for row in self.conn.execute(ITEMS_SQL):
-            e = Entry(**row)
-            self._populate_entry(e)
-            yield e
+            yield self._load_entry(row)
 
-    def _populate_entry(self, e):
-        """Populate Entry's attributes from other tables."""
-        # --------------------------------------------------
+    def _load_entry(self, row):
+        """Create an `Entry` from a SQLite database row."""
+        e = Entry(**row)
         # Defaults & empty attributes
         for k in ('collections', 'creators', 'attachments',
                   'notes', 'tags'):
@@ -284,23 +277,38 @@ class Zotero(object):
         e.modified = sqlite2dt(e.modified)
 
         # --------------------------------------------------
-        # Creators
-        for row in self.conn.execute(CREATORS_SQL, (e.id,)):
-            e.creators.append(Creator(**row))
+        # Other data
+        for row in self.conn.execute(METADATA_SQL, (e.id,)):
+            k, v = row['name'], row['value']
+
+            # everything goes in the `zdata` dict
+            e.zdata[k] = v
+
+            if k == 'title':
+                log.debug(u'[zotero] + "%s"', v)
+                e.title = v
+
+            elif k == 'date':
+                e.date = parse_date(v)
+                e.year = int(v[:4])
+
+            elif k == 'abstractNote':
+                e.abstract = v
 
         # --------------------------------------------------
-        # Tags
-        for row in self.conn.execute(TAGS_SQL, (e.id,)):
-            e.tags.append(row['name'])
+        # Data from other tables
+        e.attachments = self._entry_attachments(e.id)
+        e.collections = self._entry_collections(e.id)
+        e.creators = self._entry_creators(e.id)
+        e.notes = self._entry_notes(e.id)
+        e.tags = self._entry_tags(e.id)
 
-        # --------------------------------------------------
-        # Collections
-        for row in self.conn.execute(COLLECTIONS_SQL, (e.id,)):
-            e.collections.append(Collection(**row))
+        return e
 
-        # --------------------------------------------------
-        # Attachments
-        for row in self.conn.execute(ATTACHMENTS_SQL, (e.id,)):
+    def _entry_attachments(self, entry_id):
+        """Fetch attachments for an entry."""
+        attachments = []
+        for row in self.conn.execute(ATTACHMENTS_SQL, (entry_id,)):
             key, path, title, url = (row['key'], row['path'],
                                      row['title'], row['url'])
 
@@ -322,36 +330,26 @@ class Zotero(object):
 
             a = Attachment(key=key, name=title, path=path, url=url)
             log.debug('[zotero] attachment=%r', a)
-            e.attachments.append(a)
+            attachments.append(a)
 
-        # --------------------------------------------------
-        # Notes
-        for row in self.conn.execute(NOTES_SQL, (e.id,)):
-            html = row['note']
-            e.notes.append(HTMLText.strip(html))
+        return attachments
 
-        # --------------------------------------------------
-        # Other data
-        for row in self.conn.execute(METADATA_SQL, (e.id,)):
-            k, v = row['name'], row['value']
+    def _entry_collections(self, entry_id):
+        """Fetch collections for an entry."""
+        rows = self.conn.execute(COLLECTIONS_SQL, (entry_id,))
+        return [Collection(**row) for row in rows]
 
-            if k == 'title':
-                log.debug(u'[zotero] + "%s"', v)
-                e.title = v
+    def _entry_creators(self, entry_id):
+        """Fetch creators for an entry."""
+        rows = self.conn.execute(CREATORS_SQL, (entry_id,))
+        return [Creator(**row) for row in rows]
 
-            elif k == 'date':
-                # e.zdata['date'] = v
-                # e.zdata['date_words'] = v.split()[-1]
-                e.date = parse_date(v)
-                e.year = int(v[:4])
+    def _entry_notes(self, entry_id):
+        """Fetch notes for an entry."""
+        rows = self.conn.execute(NOTES_SQL, (entry_id,))
+        return [strip_tags(row['note']) for row in rows]
 
-            elif k == 'abstractNote':
-                e.abstract = v
-
-            # everything goes in the `zdata` dict
-            e.zdata[k] = v
-
-        # Extract and set CSL data
-        e.csl = csl.entry_data(e)
-
-        return e
+    def _entry_tags(self, entry_id):
+        """Fetch tags for an entry."""
+        rows = self.conn.execute(TAGS_SQL, (entry_id,))
+        return [row['name'] for row in rows]

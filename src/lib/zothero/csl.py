@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # encoding: utf-8
 #
 # Copyright (c) 2017 Dean Jackson <deanishe@deanishe.net>
@@ -19,6 +18,7 @@ from . import util
 
 
 log = logging.getLogger(__name__)
+log.addHandler(logging.NullHandler())
 
 
 # CSL fields that should be formatted as dates
