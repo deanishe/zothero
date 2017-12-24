@@ -15,8 +15,10 @@ import json
 import logging
 import os
 import subprocess
+from tempfile import NamedTemporaryFile
 
-from .html2rtf import html2rtf
+from .locales import LOCALE_DIR
+
 
 log = logging.getLogger(__name__)
 
@@ -30,29 +32,34 @@ class CitationError(Exception):
 
 def generate(csldata, cslfile, bibliography=False, locale=None):
     """Generate an HTML & RTF citation for ``csldata`` using ``cslfile``."""
-    js = json.dumps(csldata)
+    with NamedTemporaryFile(suffix='.json') as fp:
+        json.dump(csldata, fp)
+        fp.flush()
 
-    cmd = [PROG, '--verbose']
-    if bibliography:
-        cmd.append('--bibliography')
-    if locale:
-        cmd += ['--locale', locale]
+        cmd = [PROG, '--verbose', '--locale-dir', LOCALE_DIR]
+        if bibliography:
+            cmd.append('--bibliography')
+        if locale:
+            cmd += ['--locale', locale]
 
-    cmd.append(cslfile)
+        cmd += [cslfile, fp.name]
 
-    log.debug('[cite] cmd=%r', cmd)
+        log.debug('[cite] cmd=%r', cmd)
 
-    p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                         stderr=subprocess.PIPE)
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
 
-    stdout, stderr = p.communicate(js)
-    if p.returncode:
-        raise CitationError('cite exited with %d: %s', p.returncode, stderr)
+        stdout, stderr = p.communicate()
+        if p.returncode:
+            raise CitationError('cite exited with %d: %s', p.returncode,
+                                stderr)
 
-    html = stdout.decode('utf-8')
+    data = json.loads(stdout)
+    html = data['html']
+
     log.debug('[cite] html=%r', html)
 
-    rtf = html2rtf(html)
+    rtf = '{\\rtf1\\ansi\\deff0 ' + data['rtf'] + '}'
     log.debug('[cite] rtf=%r', rtf)
 
     return dict(html=html, text=html, rtf=rtf)

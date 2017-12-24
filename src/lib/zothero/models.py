@@ -143,7 +143,7 @@ class Entry(AttrDict):
         Returns:
             str: JSON array containing CSL data for one `Entry`.
         """
-        return json.dumps([self.csl], indent=2, sort_keys=True)
+        return json.dumps(self.csl, indent=2, sort_keys=True)
 
     def __str__(self):
         """Title, year and author(s) of `Entry`.

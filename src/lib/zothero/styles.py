@@ -217,9 +217,10 @@ class Styles(object):
 
         log.debug('[styles] locale=%r', locale)
         log.debug('[styles] style=%r', style)
-        log.debug('[styles] csl=%r', [entry.csl])
+        log.debug('[styles] csl=%r', entry.csl)
+        # log.debug('[styles] json=%s', entry.csljson)
 
-        return cite.generate([entry.csl], style.path, bibliography, locale)
+        return cite.generate(entry.csl, style.path, bibliography, locale)
 
     def update(self):
         """Load CSL style definitions.

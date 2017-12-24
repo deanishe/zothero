@@ -1,0 +1,66 @@
+#!/bin/zsh
+
+set -e
+
+here="$( cd "$( dirname "$0" )"; pwd )"
+outfile="${here}/cite"
+libfile="${here}/../src/lib/cite/cite"
+minify=false
+
+usage() {
+    cat <<EOS
+build [-m|-h]
+
+Build `cite` from citeproc-js and cite.js.
+
+Usage:
+    build [-m]
+    build -h
+
+Options:
+    -m      Minify generated script
+    -h      Show this help message and exit
+EOS
+}
+
+while getopts ":hm" opt; do
+  case $opt in
+    h)
+      usage
+      exit 0
+      ;;
+    m)
+      minify=true
+      ;;
+    \?)
+      log "Invalid option: -$OPTARG"
+      exit 1
+      ;;
+  esac
+done
+shift $((OPTIND-1))
+
+
+echo '' > "$outfile"
+echo '#!/usr/bin/osascript -l JavaScript' > "$outfile"
+echo "\n" >> "$outfile"
+
+echo "window = this;\n\n" >> "$outfile"
+
+echo "// ======================== citeproc ==========================\n" >> "$outfile"
+
+$minify && {
+  browserify -r citeproc -s CSL | uglifyjs -c -m -r CSL >> "$outfile"
+} || {
+  browserify -r citeproc -s CSL  >> "$outfile"
+}
+
+
+echo "\n\n// ======================== /citeproc =========================\n" >> "$outfile"
+
+
+cat "${here}/cite.js" >> "$outfile"
+
+chmod +x "$outfile"
+
+command cp -vf "$outfile" "$libfile"
