@@ -12,6 +12,7 @@ ZotHero
 - [Features](#features)
 - [Download & installation](#download--installation)
 - [Usage](#usage)
+    - [Pasting citations](#pasting-citations)
 - [Configuration](#configuration)
     - [Zotero data](#zotero-data)
     - [Citation styles](#citation-styles)
@@ -45,6 +46,8 @@ Download the `ZotHero-XYZ.alfredworkflow` file from [GitHub releases](https://gi
 Usage
 -----
 
+These are the workflow's default keywords in Alfred:
+
 - `zot <query>` — Search your Zotero database (all fields).
     - `↩` — Open the entry in Zotero.
     - `⌘↩` — Copy citation to the pasteboard (see [Configuration](#configuration)).
@@ -59,11 +62,18 @@ Usage
     - `↩` — Select a field to search against.
 - `zotconf [<query>]` — View and edit workflow configuration.
     - `An Update is Available` / `Workflow is Up To Date` — Whether a newer version of the workflow is available.
-    - `Default Style: …` — Choose citation style for the `⌘↩` and `⌥↩` hotkeys (on search results).
+    - `Default Style: …` — Choose a citation style for the `⌘↩` and `⌥↩` hotkeys (on search results).
+    - `Locale: …` — Choose a locale for the formatting of citations. If unset, US English is used.
     - `Reload Zotero Cache` — Clear the workflow's cache of Zotero data. Useful if the workflow gets out of sync with Zotero.
     - `Open Log File` — Open the workflows log file in the default app (usually Console.app). Useful for checking on indexing problems (the indexer output isn't visible in Alfred's debugger).
     - `View Documentation` — Open this README in your browser.
     - `Report an Issue` — Open the GitHub issue tracker in your browser.
+
+
+<a name="pasting-citations"></a>
+### Pasting citations ###
+
+When you copy a citation, ZotHero puts both HTML and rich text (RTF) representations on the pasteboard. That way, when you paste a citation into an application like Word, the formatted text will be pasted, but when you paste into a text/Markdown document, the HTML will be pasted.
 
 
 <a name="configuration"></a>
