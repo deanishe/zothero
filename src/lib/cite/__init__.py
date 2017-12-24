@@ -7,7 +7,7 @@
 # Created on 2017-12-22
 #
 
-"""CSL citation generator based on Ruby."""
+"""CSL citation generator based on JavaScript."""
 
 from __future__ import print_function, absolute_import
 

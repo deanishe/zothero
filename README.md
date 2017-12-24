@@ -63,7 +63,7 @@ These are the workflow's default keywords in Alfred:
 - `zotconf [<query>]` — View and edit workflow configuration.
     - `An Update is Available` / `Workflow is Up To Date` — Whether a newer version of the workflow is available.
     - `Default Style: …` — Choose a citation style for the `⌘↩` and `⌥↩` hotkeys (on search results).
-    - `Locale: …` — Choose a locale for the formatting of citations. If unset, US English is used.
+    - `Locale: …` — Choose a locale for the formatting of citations. If unset, the default for the style is used, or if none is set, US English.
     - `Reload Zotero Cache` — Clear the workflow's cache of Zotero data. Useful if the workflow gets out of sync with Zotero.
     - `Open Log File` — Open the workflows log file in the default app (usually Console.app). Useful for checking on indexing problems (the indexer output isn't visible in Alfred's debugger).
     - `View Documentation` — Open this README in your browser.
@@ -108,7 +108,9 @@ For `⌘↩` and `⌥↩` to work on search results, you must first choose a def
 <a name="locales"></a>
 ### Locales ###
 
-[CSL][csl] and ZotHero support the following locales. The default locale is `en-US` (American English). Use the `zotconf` keyword to set a different locale.
+[CSL][csl] and ZotHero support the following locales. The default behaviour is to use the locale specified in the style if there is one, and `en-US` (American English) if not. Setting a locale overrides the style's own locale.
+
+Use the `zotconf` keyword to force a specific locale.
 
 |                    Locale                    |   Code  |
 |----------------------------------------------|---------|
