@@ -71,7 +71,7 @@ These are the workflow's default keywords in Alfred:
 
 
 <a name="pasting-citations"></a>
-### Pasting citations ###
+### Pasting citations ###
 
 When you copy a citation, ZotHero puts both HTML and rich text (RTF) representations on the pasteboard. That way, when you paste a citation into an application like Word, the formatted text will be pasted, but when you paste into a text/Markdown document, the HTML will be pasted.
 
@@ -175,6 +175,8 @@ Theses are all settings available in the [workflow configuration sheet][conf-she
 
 You probably shouldn't edit the `CITE_STYLE` or `LOCALE` variables yourself, as there's no guarantee the value you set is actually available. Adjust them using the `zotconf` keyword.
 
+**Note**: Due to the way Alfred works (as of v3.5.1), it can take a few seconds for Alfred to notice that you've changed settings via the workflow itself (as opposed to directly editing them in the configuration sheet).
+
 
 |      Variable     |                       Meaning                        |
 |-------------------|------------------------------------------------------|
@@ -207,7 +209,7 @@ Licence & thanks
 
 This workflow is released under the [MIT licence][licence].
 
-It is heavily based on the [Alfred-Workflow][aw] (also MIT) and [citeproc-ruby][citeproc-ruby] ([AGPL][citeproc-licence]) libraries.
+It is heavily based on [Alfred-Workflow][aw] (also MIT) for the workflow stuff, and [citeproc-js][citeproc-js] ([AGPL][citeproc-licence]) for generating the citations.
 
 The [Zorro icon][icon-source] was created by [Dan Lowenstein][lowenstein] from [the Noun Project][noun-project].
 
@@ -215,8 +217,8 @@ The [Zorro icon][icon-source] was created by [Dan Lowenstein][lowenstein] from [
 
 [alfred]: https://www.alfredapp.com/
 [aw]: http://www.deanishe.net/alfred-workflow/
-[citeproc-licence]: https://github.com/inukshuk/citeproc-ruby/blob/master/AGPL
-[citeproc-ruby]: https://github.com/inukshuk/citeproc-ruby
+[citeproc-licence]: https://github.com/Juris-M/citeproc-js/blob/master/AGPLv3
+[citeproc-js]: https://github.com/Juris-M/citeproc-js
 [conf-sheet]: https://www.alfredapp.com/help/workflows/advanced/variables/#environment
 [csl]: http://citationstyles.org
 [icon-source]: https://thenounproject.com/term/zorro/14540/
