@@ -23,19 +23,38 @@ log = logging.getLogger(__name__)
 
 
 class ZotHero(object):
-    """Main workflow application object.
+    """Main application object.
+
+    This class is a thin wrapper around the worker classes
+
+      - `zotero.Zotero`
+      - `index.Index`
+      - `styles.Styles`
+
+    and provides a convenient, utility interface to them.
 
     Attributes:
-        wf (workflow.Workflow3): The active `Workflow3` object for this
-            workflow.
+        cachedir (str): Directory all cached data are stored in.
+
     """
 
     def __init__(self, cachedir, zot_data_dir=None, zot_attachments_dir=None):
-        """Create new `ZotHero` using ``cachedir``."""
+        """Create new `ZotHero` using ``cachedir``.
+
+        Args:
+            cachedir (str): Directory to store cached data in.
+            zot_data_dir (str, optional): Directory Zotero data are stored
+                in. Defaults to the standard Zotero directory ``~/Zotero``.
+            zot_attachments_dir (str, optional): Directory Zotero
+                attachments are stored in. This should be set to the
+                same as the "Linked Attachment Base Directory" set
+                in Zotero's preferences (if one is set).
+
+        """
         self.cachedir = cachedir
 
         # Copy of Zotero database. Zotero locks the original, so
-        # it's necessary to make a copy
+        # it's necessary to make a copy.
         self._copy_path = os.path.join(cachedir, 'zotero.sqlite')
 
         # Attributes to back lazy-loading properties
@@ -57,8 +76,8 @@ class ZotHero(object):
         This is the folder where ``zotero.sqlite``, ``storage`` and
         ``styles`` are located.
 
-        Read from the ``ZOTERO_DIR`` environment/workflow variable.
-        If unset, the default of ``~/Zotero`` is used.
+        Set to the value of ``zot_data_directory`` passed to `__init__.py`
+        or ``~/Zotero`` if not value for ``zot_data_directory`` was given.
 
         """
         if not self._zotero_dir:
@@ -87,11 +106,11 @@ class ZotHero(object):
     def zotero(self):
         """Zotero instance.
 
-        Initialses and returns a `zothero.zotero.Zotero` instance
+        Initialses and returns a `.zotero.Zotero` instance
         based on :attr:`zotero_path`.
 
         Returns:
-            zothero.zotero.Zotero: Initialised `Zotero` object.
+            .zotero.Zotero: Initialised `Zotero` object.
         """
         from .zotero import Zotero
 
@@ -115,10 +134,11 @@ class ZotHero(object):
     def index(self):
         """Search index.
 
-        Creates and returns an `Index`. May be empty.
+        Creates and returns an `Index` object. The index is initialised,
+        but may be empty.
 
         Returns:
-            zothero.index.Index: Initialised search index.
+            .index.Index: Initialised search index.
         """
         if not self._index:
             from .index import Index
@@ -150,7 +170,12 @@ class ZotHero(object):
 
     @property
     def styles(self):
-        """CSL Styles loader."""
+        """CSL Styles loader.
+
+        Returns:
+            .styles.Styles: `Styles` object pointing to the styles directory
+            of :attr:`zotero`.
+        """
         if not self._styles:
             from .styles import Styles
             self._styles = Styles(self.zotero.styles_dir, self.cachedir)

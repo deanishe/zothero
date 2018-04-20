@@ -829,25 +829,6 @@ variables={allvars}
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>externaltriggerid</key>
-				<string>citations</string>
-				<key>passinputasargument</key>
-				<false/>
-				<key>passvariables</key>
-				<true/>
-				<key>workflowbundleid</key>
-				<string>self</string>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.output.callexternaltrigger</string>
-			<key>uid</key>
-			<string>27AB4926-3249-4A80-85B5-6176911ACE7D</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
 				<key>alfredfiltersresults</key>
 				<false/>
 				<key>alfredfiltersresultsmatchmode</key>
@@ -902,6 +883,25 @@ EOS</string>
 			<string>F9040898-2FD2-4C79-B34F-1EEAD90BE256</string>
 			<key>version</key>
 			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>externaltriggerid</key>
+				<string>citations</string>
+				<key>passinputasargument</key>
+				<false/>
+				<key>passvariables</key>
+				<true/>
+				<key>workflowbundleid</key>
+				<string>self</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.callexternaltrigger</string>
+			<key>uid</key>
+			<string>27AB4926-3249-4A80-85B5-6176911ACE7D</string>
+			<key>version</key>
+			<integer>1</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -1012,7 +1012,7 @@ test -n "$bibliography" &amp;&amp; flags+=(--bibliography)
 			<key>config</key>
 			<dict>
 				<key>externaltriggerid</key>
-				<string>copy-cite</string>
+				<string>copy-citation</string>
 				<key>passinputasargument</key>
 				<false/>
 				<key>passvariables</key>
@@ -1031,7 +1031,7 @@ test -n "$bibliography" &amp;&amp; flags+=(--bibliography)
 			<key>config</key>
 			<dict>
 				<key>triggerid</key>
-				<string>copy-cite</string>
+				<string>copy-citation</string>
 			</dict>
 			<key>type</key>
 			<string>alfred.workflow.trigger.external</string>
@@ -1050,7 +1050,7 @@ test -n "$bibliography" &amp;&amp; flags+=(--bibliography)
 				<key>matchmode</key>
 				<integer>0</integer>
 				<key>matchstring</key>
-				<string>copy-cite</string>
+				<string>copy-citation</string>
 			</dict>
 			<key>type</key>
 			<string>alfred.workflow.utility.filter</string>
@@ -2028,7 +2028,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 		<key>D78E4F18-6D77-4514-A55F-8894C014AB60</key>
 		<dict>
 			<key>note</key>
-			<string>$action = copy-cite</string>
+			<string>$action = copy-citation</string>
 			<key>xpos</key>
 			<integer>730</integer>
 			<key>ypos</key>
@@ -2077,7 +2077,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>1250</integer>
 			<key>ypos</key>
-			<integer>400</integer>
+			<integer>380</integer>
 		</dict>
 		<key>F912A5F2-6586-498F-8A32-C11B59C687F5</key>
 		<dict>
@@ -2101,7 +2101,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 		<string></string>
 	</dict>
 	<key>version</key>
-	<string>0.2-beta</string>
+	<string>0.3</string>
 	<key>webaddress</key>
 	<string>https://github.com/deanishe/zothero</string>
 </dict>

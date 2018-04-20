@@ -245,9 +245,8 @@ class Zotero(object):
         sql = ITEMS_SQL + 'AND modified > ?'
         ts = dt2sqlite(dt)
         for row in self.conn.execute(sql, (ts,)):
-            e = Entry(**row)
-            self._populate_entry(e)
-            yield e
+            yield self._load_entry(row)
+
         # Items whose attachments have changed
         sql = MODIFIED_ATTACHMENTS_SQL
         for row in self.conn.execute(sql, (ts,)):

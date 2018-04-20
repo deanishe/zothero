@@ -34,7 +34,7 @@ NS = 'http://purl.org/net/xbiblio/csl'
 
 
 # class RTFFormatter(object):
-#     """citeproc formatter for RTF.
+#     """citeproc-py formatter for RTF.
 
 #     citeproc's Formatter API is insufficient for generating valid RTF,
 #     so you must call `RTFFormatter.wrap()` on the result.
@@ -117,6 +117,7 @@ class Styles(object):
         if not os.path.exists(stylesdir):
             raise ValueError('stylesdir does not exist: %r' % stylesdir)
 
+        # TODO: caller should set "styles" (or other) subdirectory
         dldir = os.path.join(cachedir, 'styles')
 
         if not os.path.exists(dldir):

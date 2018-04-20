@@ -175,12 +175,12 @@ def do_search(query):
             it.setvar('stylename', style.name)  # for notification
 
             mod = it.add_modifier('cmd', u'Copy citation (%s)' % style.name)
-            mod.setvar('action', 'copy-cite')
+            mod.setvar('action', 'copy-citation')
             mod.setvar('style', style.key)
             # For notification
 
             mod = it.add_modifier('alt', u'Copy bibliography (%s)' % style.name)
-            mod.setvar('action', 'copy-cite')
+            mod.setvar('action', 'copy-citation')
             mod.setvar('bibliography', '1')
             mod.setvar('style', style.key)
 
@@ -270,7 +270,7 @@ def do_citations(query, entry_id):
             valid=True,
         )
         it.setvar('id', entry_id)
-        it.setvar('action', 'copy-cite')
+        it.setvar('action', 'copy-citation')
         it.setvar('style', s.key)
 
         mod = it.add_modifier('cmd',
@@ -329,7 +329,10 @@ def do_config(query):
     style = None
     if CITE_STYLE:
         style = app.styles.get(CITE_STYLE)
-        log.debug(u'Default style: %s', style.name)
+        if not style:
+            log.warning(u'Invalid style: %s', CITE_STYLE)
+        else:
+            log.debug(u'Default style: %s', style.name)
 
     items = []  # (item params, variables) tuples
     if wf.update_available:
@@ -541,7 +544,20 @@ def do_reindex():
     This command is called in a background job by `do_search()`.
     """
     from zothero import app
-    app.update_index(force=True)
+    # TODO: Decide whether to force a full update here.
+    #
+    # Only entries and attachments have a "modified" date.
+    # If any entries or attachments have changed, only they
+    # will be updated if force == False. Entries whose notes
+    # have changed are not picked up.
+    #
+    # Changed notes are only be picked up if *no* entries
+    # or attachments were changed (a full update is forced when
+    # the library notices that the database has changed,
+    # but there are no updated entries or attachments).
+    #
+    # Setting `force=True` reloads everything on every update.
+    app.update_index(force=False)
 
 
 def do_notify(title, text):

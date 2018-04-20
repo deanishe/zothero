@@ -251,16 +251,19 @@ class Index(object):
             boolean: ``True`` if index was updated, else ``False``
         """
         # Only update search index if Zotero database is newer or
-        # the index hasn't been filled yet.
+        # the index hasn't been populated yet.
         if zot.last_updated <= self.last_updated and not self.empty:
             log.debug('[index] up to date: %r', shortpath(self.dbpath))
             return False
 
         with timed('updated search index'):
+            # First try to only update entries whose modified date (or
+            # whose attachments' modified date) has changed.
             if not self._update(zot, force):
                 # Index wasn't updated, although the database has
-                # changed. That means a note or something else we
-                # can't see was edited. Force a full update.
+                # changed. That means a note or something else that
+                # doesn't have a modified date was changed.
+                # Force a full update.
                 self._update(zot, True)
 
         return True
