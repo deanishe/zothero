@@ -608,10 +608,8 @@ def main(wf):
         attachdir = wf.decode(attachdir)
 
     app = zothero.ZotHero(wf.cachedir, datadir, attachdir)
-    # Store app and Workflow3 in `zothero` package where everything
-    # can access them.
+    # Store app in `zothero` package where everything can access it.
     zothero.app = app
-    zothero.wf = wf
 
     if args['attachments']:
         return do_attachments(entry_id, query)
