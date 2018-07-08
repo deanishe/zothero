@@ -33,6 +33,7 @@ Features
 - Copy citations either in citation/note style or bibliography style
 - Copy citations in any [locale supported by CSL](#locales)
 - Citations are copied in multiple formats, so the right data are automatically pasted into the application you're using
+- Trigger search while you type using the Snippet Trigger (you must assign the snippet keyword yourself in Alfred Preferences)
 
 
 <a name="download--installation"></a>
@@ -58,6 +59,7 @@ These are the workflow's default keywords in Alfred:
         - `↩` or `⌘↩` — Copy citation in selected style.
         - `⌥↩` — Copy bibliography-style citation in selected style.
         - `^↩` — Set style as default.
+    - This search can also be triggered by typing a snippet (which you must first assign yourself in Alfred Preferences)
 - `zot:[<query>]` — Search a specific field.
     - `↩` — Select a field to search against.
 - `zotconf [<query>]` — View and edit workflow configuration.
@@ -175,8 +177,6 @@ Theses are all settings available in the [workflow configuration sheet][conf-she
 
 You probably shouldn't edit the `CITE_STYLE` or `LOCALE` variables yourself, as there's no guarantee the value you set is actually available. Adjust them using the `zotconf` keyword.
 
-**Note**: Due to the way Alfred works (as of v3.5.1), it can take a few seconds for Alfred to notice that you've changed settings via the workflow itself (as opposed to directly editing them in the configuration sheet).
-
 
 |      Variable     |                       Meaning                        |
 |-------------------|------------------------------------------------------|
@@ -185,23 +185,6 @@ You probably shouldn't edit the `CITE_STYLE` or `LOCALE` variables yourself, as 
 | `LOCALE`          | Locale for citations. Default: `en-US` (US English). |
 | `ZOTERO_DIR`      | Path to your Zotero data.                            |
 |                   |                                                      |
-
-
-<a name="configuration-sheet"></a>
-### Configuration sheet ###
-
-Theses are all settings available in the [workflow configuration sheet][conf-sheet].
-
-You probably shouldn't edit the `CITE_STYLE` or `LOCALE` variables yourself, as there's no guarantee the value you set is actually available. Adjust them using the `zotconf` keyword.
-
-
-|      Variable     |                       Meaning                        |
-|-------------------|------------------------------------------------------|
-| `ATTACHMENTS_DIR` | Path to your Zotero attachments.                     |
-| `CITE_STYLE`      | Citation style copied by `⌘↩` and `⌥↩`               |
-| `LOCALE`          | Locale for citations. Default: `en-US` (US English). |
-| `ZOTERO_DIR`      | Path to your Zotero data.                            |
-
 
 <a name="licence--thanks"></a>
 Licence & thanks
