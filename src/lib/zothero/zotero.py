@@ -177,7 +177,7 @@ class Zotero(object):
 
     @property
     def conn(self):
-        """Connection to the database."""
+        """Return connection to the database."""
         if not self._conn:
             self._conn = sqlite3.connect(self.dbpath)
             self._conn.row_factory = sqlite3.Row

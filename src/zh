@@ -542,6 +542,7 @@ def do_reindex():
     """Re-index search database.
 
     This command is called in a background job by `do_search()`.
+
     """
     from zothero import app
     # TODO: Decide whether to force a full update here.
@@ -568,6 +569,7 @@ def do_notify(title, text):
     Args:
         title (unicode): Title for the notification.
         text (unicode): Text for the notification.
+
     """
     from workflow.notify import notify
 

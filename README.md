@@ -48,7 +48,7 @@ Usage
 
 These are the workflow's default keywords in Alfred:
 
-- `zot <query>` — Search your Zotero database (all fields).
+- `zot <query>` — Search your Zotero database (common fields).
     - `↩` — Open the entry in Zotero.
     - `⌘↩` — Copy citation to the pasteboard (see [Configuration](#configuration)).
     - `⌥↩` — Copy bibliography-style citation to the pasteboard (see [Configuration](#configuration)).

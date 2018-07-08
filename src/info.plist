@@ -1806,7 +1806,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>colorindex</key>
 			<integer>10</integer>
 			<key>note</key>
-			<string>Search all fields</string>
+			<string>Search common fields</string>
 			<key>xpos</key>
 			<integer>270</integer>
 			<key>ypos</key>
@@ -2140,7 +2140,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 		<string></string>
 	</dict>
 	<key>version</key>
-	<string>0.3</string>
+	<string>0.4</string>
 	<key>webaddress</key>
 	<string>https://github.com/deanishe/zothero</string>
 </dict>

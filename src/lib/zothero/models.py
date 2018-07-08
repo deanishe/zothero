@@ -105,6 +105,7 @@ class Entry(AttrDict):
         Args:
             *args: Optional initialisation data. As for `dict`.
             **kwargs: Optional initialisation data. As for `dict`.
+
         """
         super(Entry, self).__init__(*args, **kwargs)
 
@@ -114,6 +115,7 @@ class Entry(AttrDict):
 
         Returns:
             list: Sequence of `Creator` objects.
+
         """
         return [c for c in self.creators if c.type == 'author']
 
@@ -123,6 +125,7 @@ class Entry(AttrDict):
 
         Returns:
             list: Sequence of `Creator` objects.
+
         """
         return [c for c in self.creators if c.type == 'editor']
 
@@ -132,6 +135,7 @@ class Entry(AttrDict):
 
         Returns:
             dict: Entry data converted to CSL types.
+
         """
         from .csl import entry_data
         return entry_data(self)
@@ -142,6 +146,7 @@ class Entry(AttrDict):
 
         Returns:
             str: JSON array containing CSL data for one `Entry`.
+
         """
         return json.dumps(self.csl, indent=2, sort_keys=True)
 
@@ -150,6 +155,7 @@ class Entry(AttrDict):
 
         Returns:
             str: UTF8-encoded string.
+
         """
         return unicode(self).encode('utf-8', 'replace')
 
@@ -158,6 +164,7 @@ class Entry(AttrDict):
 
         Returns:
             unicode: Description of `Entry`.
+
         """
         s = self.title
         if self.year:
@@ -175,6 +182,7 @@ class Entry(AttrDict):
 
         Returns:
             str: JSON-encoded `Entry`.
+
         """
         return json.dumps(self, indent=2, sort_keys=True,
                           default=json_serialise)
@@ -200,6 +208,7 @@ class Attachment(AttrDict):
         Args:
             *args: Optional initialisation data. As for `dict`.
             **kwargs: Optional initialisation data. As for `dict`.
+
         """
         super(Attachment, self).__init__(*args, **kwargs)
 
@@ -219,6 +228,7 @@ class Collection(AttrDict):
         Args:
             *args: Optional initialisation data. As for `dict`.
             **kwargs: Optional initialisation data. As for `dict`.
+
         """
         super(Collection, self).__init__(*args, **kwargs)
 
@@ -240,6 +250,7 @@ class Creator(AttrDict):
         Args:
             *args: Optional initialisation data. As for `dict`.
             **kwargs: Optional initialisation data. As for `dict`.
+
         """
         super(Creator, self).__init__(*args, **kwargs)
 
@@ -254,6 +265,7 @@ class CSLStyle(AttrDict):
         parent_url (unicode): URL of parent style for dependent styles.
             ``None`` for independent styles.
         url (unicode): Canonical URL of the style.
+
     """
 
     @classmethod
@@ -267,24 +279,26 @@ class CSLStyle(AttrDict):
         Args:
             *args: Optional initialisation data. As for `dict`.
             **kwargs: Optional initialisation data. As for `dict`.
+
         """
         super(CSLStyle, self).__init__(*args, **kwargs)
 
     @property
     def key(self):
-        """Unique key for style.
+        """Return unique key for style.
 
         Returns:
             unicode: Style key.
+
         """
         return self.url
 
     def __unicode__(self):
-        """String representation of style."""
+        """Return Unicode representation of style."""
         return u'[{}] {}'.format(self.key, self.name)
 
     def __str__(self):
-        """String representation of style."""
+        """Return UTF-8 representation of style."""
         return utf8encode(unicode(self))
 
     def __repr__(self):

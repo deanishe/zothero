@@ -17,6 +17,7 @@ import logging
 import os
 import sqlite3
 import struct
+from urlparse import urlparse
 
 from .util import dt2sqlite, timed, time_since, shortpath
 from .zotero import Entry
@@ -24,7 +25,7 @@ from .zotero import Entry
 # Version of the database schema/data format.
 # Increment this every time the schema or JSON format changes to
 # invalidate the existing cache.
-DB_VERSION = 6
+DB_VERSION = 7
 
 # SQL schema for the search database. The Entry is also stored in the
 # database as JSON for speed (it takes 7 SQL queries to retrieve an
@@ -32,7 +33,7 @@ DB_VERSION = 6
 INDEX_SCHEMA = """
 CREATE VIRTUAL TABLE search USING fts3(
     id, title, year, creators, authors, editors,
-    tags, collections, attachments, notes, abstract
+    tags, collections, attachments, notes, abstract, all
 );
 
 CREATE TABLE modified (
@@ -62,7 +63,7 @@ ORDER BY score DESC
 LIMIT 100
 """
 
-RESET_SQL = u"""
+RESET_SQL = """
 DROP TABLE IF EXISTS `data`;
 DROP TABLE IF EXISTS `dbinfo`;
 DROP TABLE IF EXISTS `modified`;
@@ -73,11 +74,12 @@ PRAGMA INTEGRITY_CHECK;
 
 # Search database column names
 COLUMNS = ('title', 'year', 'creators', 'authors', 'editors', 'tags',
-           'collections', 'attachments', 'notes', 'abstract')
+           'collections', 'attachments', 'notes', 'abstract', 'all')
 
 # Search weightings for columns. The first column (key) is ignored (0.0)
-# collections, attachments, notes and abstract have lower weightings.
-WEIGHTINGS = (0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5, 0.4, 0.3, 0.3)
+# collections, attachments, notes, abstract and all have lower weightings.
+# "all" is particularly low-ranked to avoid polluting results
+WEIGHTINGS = (0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5, 0.4, 0.3, 0.3, 0.1)
 
 
 class InitialiseDB(Exception):
@@ -99,10 +101,12 @@ def make_rank_func(weights):
 
         """
         def rank(matchinfo):
-            """
+            """Rank function for SQLite.
+
             `matchinfo` is defined as returning 32-bit unsigned integers in
             machine byte order (see http://www.sqlite.org/fts3.html#matchinfo)
             and `struct` defaults to machine byte order.
+
             """
             bufsize = len(matchinfo)  # Length in bytes.
             matchinfo = [struct.unpack(b'I', matchinfo[i:i + 4])[0]
@@ -119,18 +123,26 @@ class Index(object):
     """Search index database."""
 
     def __init__(self, dbpath):
+        """Create a new search index.
+
+        Args:
+            dbpath (str): Path to SQLite database file.
+
+        """
         self.dbpath = dbpath
         self._conn = None
 
     @property
     def conn(self):
-        """Connection to the database."""
+        """Return connection to the database."""
         if not self._conn:
             conn = sqlite3.connect(self.dbpath)
             conn.row_factory = sqlite3.Row
 
             if not self._db_valid(conn):
-                log.debug('[index] initialising %r ...', shortpath(self.dbpath))
+                log.debug('[index] initialising %r ...',
+                          shortpath(self.dbpath))
+
                 conn.executescript(INDEX_SCHEMA)
                 with conn as c:
                     sql = u"""
@@ -198,6 +210,7 @@ class Index(object):
 
         Returns:
             zothero.zotero.Entry: `Entry` for `id` or `None` if not found.
+
         """
         sql = """SELECT json FROM data WHERE id = ?"""
         row = self.conn.execute(sql, (entry_id,)).fetchone()
@@ -214,6 +227,7 @@ class Index(object):
 
         Returns:
             list: `Entry` objects for matching database items.
+
         """
         entries = []
         for row in self.conn.execute(SEARCH_SQL, (query,)):
@@ -249,6 +263,7 @@ class Index(object):
 
         Returns:
             boolean: ``True`` if index was updated, else ``False``
+
         """
         # Only update search index if Zotero database is newer or
         # the index hasn't been populated yet.
@@ -281,6 +296,7 @@ class Index(object):
 
         Returns:
             boolean: ``True`` if index was updated, else ``False``
+
         """
         log.debug('[index] updating %r ...', shortpath(self.dbpath))
         if force:
@@ -303,7 +319,37 @@ class Index(object):
                 dt = datetime.utcfromtimestamp(self.last_updated)
                 it = zot.modified_since(dt)
 
+            # fields in zdata to exclude from all_
+            zfields_ignore = ('title', 'numPages', 'numberOfVolumes')
+
             for e in it:
+
+                tags = u' '.join(e.tags)
+                collections = u' '.join([d.name for d in e.collections])
+                attachments = u' '.join([d.name for d in e.attachments
+                                         if d.name])
+                notes = u' '.join(e.notes)
+
+                names = {d.family for d in e.creators + e.authors + e.editors
+                         if d.family}
+
+                all_ = [e.title, u' '.join(names), tags, collections,
+                        attachments, notes, e.abstract, unicode(e.year),
+                        e.date]
+
+                for k, v in e.zdata.items():
+                    if k in zfields_ignore or 'date' in k.lower():
+                        continue
+
+                    if k == 'url':
+                        hostname = urlparse(v).hostname
+                        if hostname.startswith('www.'):
+                            hostname = hostname[4:]
+                        all_.append(hostname)
+                    else:
+                        all_.append(v)
+
+                all_ = [v for v in all_ if v]
 
                 data = [
                     e.id,
@@ -312,11 +358,12 @@ class Index(object):
                     u' '.join([d.family for d in e.creators if d.family]),
                     u' '.join([d.family for d in e.authors if d.family]),
                     u' '.join([d.family for d in e.editors if d.family]),
-                    u' '.join(e.tags),
-                    u' '.join([d.name for d in e.collections]),
-                    u' '.join([d.name for d in e.attachments if d.name]),
-                    u' '.join(e.notes),
+                    tags,
+                    collections,
+                    attachments,
+                    notes,
                     e.abstract,
+                    u' '.join(all_),
                 ]
 
                 if e.id in index_ids:  # update
@@ -328,7 +375,7 @@ class Index(object):
                                 authors = ?, editors = ?,
                                 tags = ?, collections = ?,
                                 attachments = ?, notes = ?,
-                                abstract = ?
+                                abstract = ?, all = ?
                         WHERE id = ?
                     """
                     c.execute(sql, data[1:] + [e.id])
@@ -346,7 +393,7 @@ class Index(object):
                     # Fulltext search table
                     sql = u"""
                         INSERT INTO search
-                            VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """
                     c.execute(sql, data)
 
