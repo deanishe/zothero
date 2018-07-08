@@ -194,6 +194,8 @@ This workflow is released under the [MIT licence][licence].
 
 It is heavily based on [Alfred-Workflow][aw] (also MIT) for the workflow stuff, and [citeproc-js][citeproc-js] ([AGPL][citeproc-licence]) for generating the citations.
 
+It was inspired by the now-defunct [ZotQuery][zotquery] by [@fractaledmind][smargh].
+
 The [Zorro icon][icon-source] was created by [Dan Lowenstein][lowenstein] from [the Noun Project][noun-project].
 
 
@@ -209,3 +211,5 @@ The [Zorro icon][icon-source] was created by [Dan Lowenstein][lowenstein] from [
 [lowenstein]: https://thenounproject.com/danny_mustache
 [noun-project]: https://thenounproject.com
 [releases]: https://github.com/deanishe/zothero/releases
+[smargh]: https://github.com/fractaledmind
+[zotquery]: https://github.com/fractaledmind/alfred_zotquery
