@@ -23,7 +23,8 @@ Usage:
     zh notify [--title <msg>] [--text <msg>]
     zh reindex
     zh search <query>
-    zh select [--style <key>] [<query>]
+    zh style [--style <key>] [<query>]
+    zh setvar <key> <value>
     zh --help
 
 Options:
@@ -386,7 +387,7 @@ def do_config(query):
 
     items.append((dict(
         title=u'Locale: ' + name,
-        subtitle=u'↩ to change style',
+        subtitle=u'↩ to change locale',
         valid=True,
         icon=icon,
     ), dict(
@@ -450,7 +451,7 @@ def do_config(query):
     wf.send_feedback()
 
 
-def do_select(query, style_key):
+def do_style(query, style_key):
     """Choose a default style."""
     from zothero import app
 
@@ -476,11 +477,9 @@ def do_select(query, style_key):
                          icon=icon)
         it.setvar('varval', s.key)
         # For notification
-        it.setvar('notifytitle', 'Changed Default Style')
-        it.setvar('notifytext', s.name)
-        # Alfred doesn't notice changes fast enough, so turn this off
-        # for the time being
-        # it.setvar('next', 'config')
+        # it.setvar('notifytitle', 'Changed Default Style')
+        # it.setvar('notifytext', s.name)
+        it.setvar('next', 'config')
 
     wf.warn_empty('No Matching Styles', 'Try a different query?')
     wf.send_feedback()
@@ -512,11 +511,9 @@ def do_locale(query):
                          icon=icon)
         it.setvar('varval', l.code)
         # For notification
-        it.setvar('notifytitle', 'Changed Locale')
-        it.setvar('notifytext', l.name)
-        # Alfred doesn't notice changes fast enough, so turn this off
-        # for the time being
-        # it.setvar('next', 'config')
+        # it.setvar('notifytitle', 'Changed Locale')
+        # it.setvar('notifytext', l.name)
+        it.setvar('next', 'config')
 
     wf.warn_empty('No Matching Locales', 'Try a different query?')
     wf.send_feedback()
@@ -559,6 +556,19 @@ def do_reindex():
     #
     # Setting `force=True` reloads everything on every update.
     app.update_index(force=False)
+
+
+def do_setvar(key, value):
+    """Save a variable to ``info.plist``.
+
+    Args:
+        key (unicode): Name of variable to set.
+        value (unicode): New value of variable.
+
+    """
+    from workflow.util import set_config
+    log.debug('[settings] setting "%s" to "%s" ...', key, value)
+    set_config(key, value, exportable=True)
 
 
 def do_notify(title, text):
@@ -643,8 +653,11 @@ def main(wf):
     if args['search']:
         return do_search(query)
 
-    if args['select']:
-        return do_select(query, args['--style'])
+    if args['style']:
+        return do_style(query, args['--style'])
+
+    if args['setvar']:
+        return do_setvar(args['<key>'], args['<value>'])
 
     raise ValueError('Unknown command')
 
