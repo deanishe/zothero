@@ -77,7 +77,7 @@ class ZotHero(object):
         ``styles`` are located.
 
         Set to the value of ``zot_data_directory`` passed to `__init__.py`
-        or ``~/Zotero`` if not value for ``zot_data_directory`` was given.
+        or ``~/Zotero`` if no value for ``zot_data_directory`` was given.
 
         """
         if not self._zotero_dir:

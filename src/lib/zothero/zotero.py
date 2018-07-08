@@ -195,11 +195,7 @@ class Zotero(object):
     @property
     def storage_dir(self):
         """Path to Zotero's internal directory for attachments."""
-        path = os.path.join(self.datadir, 'storage')
-        if not os.path.exists(path):
-            raise ValueError('storage directory does not exist: %r' % path)
-
-        return path
+        return os.path.join(self.datadir, 'storage')
 
     @property
     def attachments_dir(self):
