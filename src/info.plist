@@ -206,6 +206,19 @@
 				<true/>
 			</dict>
 		</array>
+		<key>5CFF0FD7-987C-4910-AD1E-0C40BF66585A</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>53172C76-0F6F-4E84-8C96-D0E81629CBA4</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
 		<key>65A74884-90D6-4453-963E-454CF4C84DCB</key>
 		<array/>
 		<key>674740C4-BFDA-44C8-A478-586EF06217BF</key>
@@ -755,6 +768,23 @@ variables={allvars}
 			<string>AF2071DD-5096-4528-8E57-EFD4E1817FEA</string>
 			<key>version</key>
 			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>focusedappvariable</key>
+				<false/>
+				<key>focusedappvariablename</key>
+				<string></string>
+				<key>keyword</key>
+				<string>zzot</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.snippet</string>
+			<key>uid</key>
+			<string>5CFF0FD7-987C-4910-AD1E-0C40BF66585A</string>
+			<key>version</key>
+			<integer>1</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -1790,6 +1820,15 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<integer>1490</integer>
 			<key>ypos</key>
 			<integer>590</integer>
+		</dict>
+		<key>5CFF0FD7-987C-4910-AD1E-0C40BF66585A</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>10</integer>
+			<key>xpos</key>
+			<integer>70</integer>
+			<key>ypos</key>
+			<integer>220</integer>
 		</dict>
 		<key>5D1E28B8-C1D6-495B-856F-F48C59150FE0</key>
 		<dict>
