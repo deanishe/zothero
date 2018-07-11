@@ -14,7 +14,7 @@ from __future__ import print_function, absolute_import
 import json
 import logging
 import os
-import subprocess
+import subprocess  # nosec
 from tempfile import NamedTemporaryFile
 
 from .locales import LOCALE_DIR
@@ -46,7 +46,7 @@ def generate(csldata, cslfile, bibliography=False, locale=None):
 
         log.debug('[cite] cmd=%r', cmd)
 
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE,  # nosec
                              stderr=subprocess.PIPE)
 
         stdout, stderr = p.communicate()

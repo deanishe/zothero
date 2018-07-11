@@ -338,11 +338,14 @@ class Index(object):
                         e.date]
 
                 for k, v in e.zdata.items():
-                    if k in zfields_ignore or 'date' in k.lower():
+                    if k in zfields_ignore or 'date' in k.lower() or not v:
                         continue
 
                     if k == 'url':
                         hostname = urlparse(v).hostname
+                        if not hostname:
+                            continue
+
                         if hostname.startswith('www.'):
                             hostname = hostname[4:]
                         all_.append(hostname)

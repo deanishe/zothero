@@ -111,6 +111,7 @@ class ZotHero(object):
 
         Returns:
             .zotero.Zotero: Initialised `Zotero` object.
+
         """
         from .zotero import Zotero
 
@@ -139,6 +140,7 @@ class ZotHero(object):
 
         Returns:
             .index.Index: Initialised search index.
+
         """
         if not self._index:
             from .index import Index
@@ -175,6 +177,7 @@ class ZotHero(object):
         Returns:
             .styles.Styles: `Styles` object pointing to the styles directory
             of :attr:`zotero`.
+
         """
         if not self._styles:
             from .styles import Styles
@@ -190,6 +193,7 @@ class ZotHero(object):
 
         Returns:
             zothero.zotero.Entry: `Entry` for `key` or `None` if not found.
+
         """
         return self.index.entry(entry_id)
 

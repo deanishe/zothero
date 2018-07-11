@@ -73,7 +73,9 @@ class Store(object):
         convert_in (callable): Called on input before storage.
         convert_out (callable): Called on output before returning it.
         name (str): Name of store (and database table).
+
     """
+
     def __init__(self, name, cache, convert_in=None, convert_out=None):
         """Create new `Store`.
 
@@ -82,6 +84,7 @@ class Store(object):
             cache (Cache): `Cache` object managing the database.
             convert_in (callable, optional): Called on input before storage.
             convert_out (callable, optional): Called on output before return.
+
         """
         self.name = name
         self.cache = cache
@@ -104,6 +107,7 @@ class Store(object):
 
         Yields:
             unicode: Store keys.
+
         """
         sql = u"""
             SELECT `key` FROM `{table}` WHERE 1
@@ -123,6 +127,7 @@ class Store(object):
 
         Returns:
             obj: Object deserialised from the database.
+
         """
         key = self._validate_key(key)
         sql = u"""
@@ -142,6 +147,7 @@ class Store(object):
         Args:
             key (str): Database key.
             value (obj): Object to store in database.
+
         """
         key = self._validate_key(key)
         value = self.convert_in(value)
@@ -199,6 +205,7 @@ class Store(object):
         Returns:
             float: UNIX timestamp of last update, or ``0.0`` if key
                 doesn't exit.
+
         """
         if key:
             sql = u"""
@@ -230,6 +237,7 @@ class Store(object):
 
         Returns:
             unicode: Unicode `key`.
+
         """
         if isinstance(key, str):
             key = unicode(key, 'utf-8')
@@ -248,6 +256,7 @@ class Cache(object):
         filepath (str): Path to cache sqlite file.
         invalid_names (tuple): Names not permitted for Stores
             (i.e. bad table names).
+
     """
 
     invalid_names = ('dbinfo', 'sqlite_sequence', 'sqlite_master')
@@ -257,6 +266,7 @@ class Cache(object):
 
         Args:
             filepath (str): Path of cache sqlite database.
+
         """
         self.filepath = filepath
         self._conn = None
@@ -295,6 +305,7 @@ class Cache(object):
 
         Returns:
             Store: `Store` object.
+
         """
         # log.debug('self.caches=%r', self.caches)
         log.debug('[cache] opening store %r...', name)
@@ -314,6 +325,7 @@ class Cache(object):
 
         Raises:
             ValueError: Raised if specified Store does not exit.
+
         """
         if name is None:  # Delete whole cache
             try:
@@ -340,6 +352,7 @@ class Cache(object):
 
         Returns:
             list: String names of Stores.
+
         """
         sql = u"SELECT name FROM `sqlite_master` WHERE type='table'"
         rows = self.conn.execute(sql)
@@ -357,6 +370,7 @@ class Cache(object):
 
         Raises:
             ValueError: Raised if `name` is not permitted.
+
         """
         if name.lower() in self.invalid_names:
             raise ValueError('name is reserved: %r' % name.lower())

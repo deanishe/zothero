@@ -169,6 +169,7 @@ class Zotero(object):
             datadir (str): Path to Zotero's data directory.
             dbpath (str, optional): Path to `zotero.sqlite` if not in
                 ``datadir``.
+
         """
         self.datadir = datadir
         self._attachments_dir = attachments_base_dir
