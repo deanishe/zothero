@@ -32,8 +32,8 @@ DB_VERSION = 7
 # Entry from the Zotero database).
 INDEX_SCHEMA = """
 CREATE VIRTUAL TABLE search USING fts3(
-    id, title, year, creators, authors, editors,
-    tags, collections, attachments, notes, abstract, all
+    `id`, `title`, `year`, `creators`, `authors`, `editors`,
+    `tags`, `collections`, `attachments`, `notes`, `abstract`, `all`
 );
 
 CREATE TABLE modified (
@@ -374,13 +374,14 @@ class Index(object):
                     # Fulltext search
                     sql = u"""
                         UPDATE search
-                            SET title = ?, year = ?, creators = ?,
-                                authors = ?, editors = ?,
-                                tags = ?, collections = ?,
-                                attachments = ?, notes = ?,
-                                abstract = ?, all = ?
+                            SET `title` = ?, `year` = ?, `creators` = ?,
+                                `authors` = ?, `editors` = ?,
+                                `tags` = ?, `collections` = ?,
+                                `attachments` = ?, `notes` = ?,
+                                `abstract` = ?, `all` = ?
                         WHERE id = ?
                     """
+                    # log.debug('sql=%s, data=%r', sql, data)
                     c.execute(sql, data[1:] + [e.id])
 
                     # JSON data

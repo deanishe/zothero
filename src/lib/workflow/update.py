@@ -351,7 +351,6 @@ def check_update(github_slug, current_version, prereleases=False):
         wf().logger.warning('no valid releases for %s', github_slug)
         wf().cache_data('__workflow_update_status', {'available': False})
         return False
-        # raise ValueError('no valid releases for %s', github_slug)
 
     wf().logger.info('%d releases for %s', len(releases), github_slug)
 

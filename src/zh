@@ -17,7 +17,7 @@ Usage:
     zh citations <id> [<query>]
     zh clear
     zh config [<query>]
-    zh copy [--bibliography] <style> <id>
+    zh copy [--bibliography] [--paste] <style> <id>
     zh fields [<query>]
     zh locale [<query>]
     zh notify [--title <msg>] [--text <msg>]
@@ -32,6 +32,7 @@ Options:
     -s <key>, --style=<key>       The currently-selected style.
     --title=<msg>                 Notification title.
     --text=<msg>                  Notification text.
+    --paste                       Paste citation after copying it.
     -h, --help                    Show this message and exit.
 
 """
@@ -55,6 +56,9 @@ log = None
 CITE_STYLE = os.getenv('CITE_STYLE')
 # User's preferred locale for citations
 LOCALE = os.getenv('LOCALE')
+
+# Set if workflow was run via Snippet Trigger
+AUTOPASTE = os.getenv('autopaste')
 
 # GitHub repo to check for updates
 UPDATE_SETTINGS = {
@@ -109,6 +113,12 @@ def do_search(query):
     if CITE_STYLE:
         style = app.styles.get(CITE_STYLE)
         log.debug(u'Citation style: %s', style.name)
+
+    # Add AUTOPASTE to workflow's variables, as Alfred's default
+    # behaviour is to drop all other variables on the floor if
+    # a modifier key is used.
+    if AUTOPASTE:
+        wf.setvar('autopaste', AUTOPASTE)
 
     # ------------------------------------------------------------------
     # Update index in background if it's out of date
@@ -175,12 +185,15 @@ def do_search(query):
         if style:
             it.setvar('stylename', style.name)  # for notification
 
-            mod = it.add_modifier('cmd', u'Copy citation (%s)' % style.name)
+            action = 'Paste' if AUTOPASTE else 'Copy'
+            mod = it.add_modifier('cmd', u'%s citation (%s)' %
+                                  (action, style.name))
             mod.setvar('action', 'copy-citation')
             mod.setvar('style', style.key)
             # For notification
 
-            mod = it.add_modifier('alt', u'Copy bibliography (%s)' % style.name)
+            mod = it.add_modifier('alt', u'%s bibliography (%s)' %
+                                  (action, style.name))
             mod.setvar('action', 'copy-citation')
             mod.setvar('bibliography', '1')
             mod.setvar('style', style.key)
@@ -262,10 +275,11 @@ def do_citations(query, entry_id):
                            min_score=30)
 
     # Generate feedback
+    action = 'Paste' if AUTOPASTE else 'Copy'
     for s in styles:
         it = wf.add_item(
             s.name,
-            u'Copy citation for "%s"' % e.title,
+            u'%s citation for "%s"' % (action, e.title),
             arg=s.key,
             icon=ICON_CITATION,
             valid=True,
@@ -275,9 +289,9 @@ def do_citations(query, entry_id):
         it.setvar('style', s.key)
 
         mod = it.add_modifier('cmd',
-                              u'Copy citation for “%s”' % e.title)
+                              u'%s citation for “%s”' % (action, e.title))
         mod = it.add_modifier('alt',
-                              u'Copy bibliography for “%s”' % e.title)
+                              u'%s bibliography for “%s”' % (action, e.title))
         mod.setvar('bibliography', '1')
 
         if s.key != CITE_STYLE:
@@ -297,7 +311,7 @@ def do_citations(query, entry_id):
     wf.send_feedback()
 
 
-def do_copy(style_key, entry_id, bib_style=False):
+def do_copy(style_key, entry_id, bib_style=False, paste=False):
     """Copy a citation to the pasteboard."""
     from zothero import app
     import pasteboard as pb
@@ -320,6 +334,9 @@ def do_copy(style_key, entry_id, bib_style=False):
         pb.UTI_TEXT: data['rtf'],
     }
     pb.set(pbdata)
+
+    if paste:
+        pb.paste()
 
 
 def do_config(query):
@@ -636,7 +653,8 @@ def main(wf):
         return do_config(args['<query>'])
 
     if args['copy']:
-        return do_copy(args['<style>'], entry_id, args['--bibliography'])
+        return do_copy(args['<style>'], entry_id, args['--bibliography'],
+                       args['--paste'])
 
     if args['fields']:
         return do_fields(query)
