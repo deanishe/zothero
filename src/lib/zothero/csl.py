@@ -38,6 +38,7 @@ def get_field(zfield, ztype):
 
     Returns:
         unicode: CSL field name or ``None``.
+
     """
     # Get "canonical" Zotero field name
     zfield = REMAP.get(zfield, zfield)
@@ -56,6 +57,7 @@ def get_creator(ztype):
 
     Returns:
         unicode: CSL creator type or ``None``.
+
     """
     # Get "canonical" Zotero type
     ztype = REMAP.get(ztype, ztype)
@@ -73,6 +75,7 @@ def get_type(ztype):
 
     Returns:
         unicode: CSL type  or ``None``.
+
     """
     # Get "canonical" Zotero type
     ztype = REMAP.get(ztype, ztype)
@@ -106,6 +109,7 @@ def entry_data(e):
 
     Returns:
         dict: CSL data.
+
     """
     data = {'id': e.key}
     ctype = get_type(e.type)
@@ -144,6 +148,7 @@ def parse_date(datestr):
 
     Returns:
         dict: ``date-parts`` dict for CSL JSON.
+
     """
     parsed = util.parse_date(datestr)
     if parsed:

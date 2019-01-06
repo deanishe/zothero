@@ -14,6 +14,7 @@ from __future__ import print_function, absolute_import
 import logging
 import os
 
+from .config import read as read_config
 from .util import copyifnewer, unicodify, shortpath
 
 # Default location of Zotero's data in version 5
@@ -57,11 +58,14 @@ class ZotHero(object):
         # it's necessary to make a copy.
         self._copy_path = os.path.join(cachedir, 'zotero.sqlite')
 
-        # Attributes to back lazy-loading properties
-        self._zotero_dir = zot_data_dir  # Zotero's data directory
-        self._attachments_dir = zot_attachments_dir  # Zotero's attachment base
+        # Read Zotero config files
+        datadir, attachdir = read_config()
+
+        # Zotero's data directory
+        self._zotero_dir = zot_data_dir or datadir
+        # Zotero's attachment base
+        self._attachments_dir = zot_attachments_dir or attachdir
         self._zot = None  # Zotero object
-        # self._cache = None  # Cache object
         self._index = None  # Index object
         self._styles = None  # Styles object
 
@@ -160,15 +164,6 @@ class ZotHero(object):
     def update_index(self, force=False):
         """Update the search index."""
         self.index.update(self.zotero, force)
-
-    # @property
-    # def cache(self):
-    #     """Top-level cache."""
-    #     if not self._cache:
-    #         from .cache import Cache
-    #         self._cache = Cache(os.path.join(self.cachedir, 'cache.sqlite'))
-
-    #     return self._cache
 
     @property
     def styles(self):

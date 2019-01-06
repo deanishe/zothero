@@ -19,7 +19,6 @@ import os
 from os.path import getmtime
 import re
 from shutil import copyfile
-import string
 import time
 from unicodedata import normalize
 
@@ -42,6 +41,7 @@ def dt2sqlite(dt):
 
     Returns:
         str: Sqlite-formatted datetime string.
+
     """
     return dt.strftime(SQLITE_DATE_FMT)
 
@@ -57,6 +57,7 @@ def sqlite2dt(s):
 
     Returns:
         datetime: `datetime` equivalent of `s`.
+
     """
     s = s.split('.')[0]
     return datetime.strptime(s, SQLITE_DATE_FMT)
@@ -82,6 +83,7 @@ class HTMLText(HTMLParser):
 
         Returns:
             unicode: Text content of HTML.
+
         """
         p = cls()
         p.feed(html)
@@ -117,6 +119,7 @@ def strip_tags(html):
 
     Returns:
         unicode: Text contained in HTML.
+
     """
     return HTMLText.strip(html)
 
@@ -133,6 +136,7 @@ def copyifnewer(source, copy):
 
     Returns:
         str: Path to copy
+
     """
     if not os.path.exists(copy) or getmtime(source) > getmtime(copy):
         log.debug('[util] copying %r to %r ...',
@@ -154,6 +158,7 @@ def unicodify(s, encoding='utf-8'):
 
     Returns:
         unicode: Decoded Unicode string.
+
     """
     if isinstance(s, unicode):
         return s
@@ -183,6 +188,7 @@ def asciify(s):
 
     Returns:
         unicode: String containing only ASCII characters.
+
     """
     u = normalize('NFD', unicodify(s))
     s = u.encode('us-ascii', 'ignore')
@@ -201,6 +207,7 @@ def parse_date(datestr):
 
     Returns:
         unicode: Parsed date if ``datestr``.
+
     """
     if not datestr:
         return None
@@ -228,6 +235,7 @@ def json_serialise(obj):
 
     Raises:
         TypeError: Raised if ``obj`` is not a `datetime.date`
+
     """
     if isinstance(obj, date):
         return obj.isoformat()

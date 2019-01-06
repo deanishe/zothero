@@ -82,17 +82,17 @@ When you copy a citation, ZotHero puts both HTML and rich text (RTF) representat
 Configuration
 -------------
 
-The workflow partly manages its own configuration with the keyword `zotconf`, but you may need to use the [workflow configuration sheet][conf-sheet] if you don't use Zotero 5's default data directory.
+The workflow reads Zotero's own config files and partly manages its own configuration with the keyword `zotconf`, but you may need to use the [workflow configuration sheet][conf-sheet] if the workflow can't read Zotero's config files.
 
 
 <a name="zotero-data"></a>
 ### Zotero data ###
 
-The workflow uses your Zotero database and styles, therefore it needs to know where to find them. By default, the workflow looks in `~/Zotero` (the default location for Zotero 5).
+The workflow uses your Zotero database and styles, therefore it needs to know where to find them. The workflow tries to read Zotero's own configuration files, and falls back to `~/Zotero` (the default location for Zotero 5).
 
-If you data are stored somewhere else, you need to set `ZOTERO_DIR` in the [workflow configuration sheet][conf-sheet].
+If the workflow can't find your data, you need to set `ZOTERO_DIR` in the [workflow configuration sheet][conf-sheet].
 
-If you have set a "Linked Attachment Base Directory" in Zotero, enter its path for `ATTACHMENTS_DIR` in the [configuration sheet][conf-sheet].
+Similarly, if you have set a "Linked Attachment Base Directory" in Zotero, but the workflow can't find the directory, enter its path for `ATTACHMENTS_DIR` in the [configuration sheet][conf-sheet].
 
 **Note**: You can use the UNIX shortcut `~` to represent your home directory, e.g. `~/Zotero` for Zotero 5's default directory.
 
@@ -178,13 +178,13 @@ Theses are all settings available in the [workflow configuration sheet][conf-she
 You probably shouldn't edit the `CITE_STYLE` or `LOCALE` variables yourself, as there's no guarantee the value you set is actually available. Adjust them using the `zotconf` keyword.
 
 
-|      Variable     |                       Meaning                        |
-|-------------------|------------------------------------------------------|
-| `ATTACHMENTS_DIR` | Path to your Zotero attachments.                     |
-| `CITE_STYLE`      | Citation style copied by `⌘↩` and `⌥↩`               |
-| `LOCALE`          | Locale for citations. Default: `en-US` (US English). |
-| `ZOTERO_DIR`      | Path to your Zotero data.                            |
-|                   |                                                      |
+|      Variable     |                                Meaning                                 |
+|-------------------|------------------------------------------------------------------------|
+| `ATTACHMENTS_DIR` | Path to your Zotero attachments. Read from Zotero's config by default. |
+| `CITE_STYLE`      | Citation style copied by `⌘↩` and `⌥↩`                                 |
+| `LOCALE`          | Locale for citations. Default: `en-US` (US English).                   |
+| `ZOTERO_DIR`      | Path to your Zotero data. Read from Zotero's config by default.        |
+
 
 <a name="licence--thanks"></a>
 Licence & thanks

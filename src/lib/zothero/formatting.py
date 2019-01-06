@@ -33,6 +33,7 @@ class EntryFormatter(object):
 
         Returns:
             unicode: Formatted title.
+
         """
         title = self.e.title
 
@@ -53,6 +54,7 @@ class EntryFormatter(object):
 
         Returns:
             unicode: Formatted list of creators.
+
         """
         n = len(self.e.creators)
         if n == 0:
@@ -96,6 +98,7 @@ class EntryFormatter(object):
 
         Returns:
             unicode: Formatted year.
+
         """
         if not self.e.year:
             return 'xxx.'
