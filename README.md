@@ -84,6 +84,8 @@ Configuration
 
 The workflow reads Zotero's own config files and partly manages its own configuration with the keyword `zotconf`, but you may need to use the [workflow configuration sheet][conf-sheet] if the workflow can't read Zotero's config files.
 
+**NOTE:** Unlike its main database, Zotero does not save changes to its configuration until the application closes. As such, if you change Zotero's data or attachment directories, the workflow won't see the changes until you quit Zotero.
+
 
 <a name="zotero-data"></a>
 ### Zotero data ###
