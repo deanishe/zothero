@@ -284,6 +284,11 @@ class Zotero(object):
                 log.debug(u'[zotero] + "%s"', v)
                 e.title = v
 
+            # Legal cases
+            if k == 'caseName':
+                log.debug(u'[zotero] + "%s"', v)
+                e.title = v
+
             elif k == 'date':
                 e.date = parse_date(v)
                 e.year = int(v[:4])
