@@ -2224,7 +2224,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 		<string></string>
 	</dict>
 	<key>version</key>
-	<string>1.2.1</string>
+	<string>1.2.2</string>
 	<key>webaddress</key>
 	<string>https://github.com/deanishe/zothero</string>
 </dict>

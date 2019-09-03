@@ -632,9 +632,9 @@ def main(wf):
     datadir = os.getenv('ZOTERO_DIR') or None
     attachdir = os.getenv('ATTACHMENTS_DIR') or None
     if datadir:
-        datadir = wf.decode(datadir)
+        datadir = wf.decode(os.path.expanduser(datadir))
     if attachdir:
-        attachdir = wf.decode(attachdir)
+        attachdir = wf.decode(os.path.expanduser(attachdir))
 
     app = zothero.ZotHero(wf.cachedir, datadir, attachdir)
     # Store app in `zothero` package where everything can access it.
