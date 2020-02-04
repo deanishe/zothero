@@ -1,4 +1,4 @@
 Alfred-Workflow==1.37.2
 docopt==0.6.2
-rtfunicode==1.4
+rtfunicode==2.0
 
