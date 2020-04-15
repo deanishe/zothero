@@ -177,6 +177,16 @@
 			</dict>
 			<dict>
 				<key>destinationuid</key>
+				<string>768ECE7D-BB80-47A0-AE4A-4AA679468977</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>destinationuid</key>
 				<string>301ED75B-77EF-4479-B2A5-ADD51A1143E5</string>
 				<key>modifiers</key>
 				<integer>0</integer>
@@ -252,6 +262,19 @@
 			<dict>
 				<key>destinationuid</key>
 				<string>09DFDC0D-394F-470C-974D-BB4AAB208CED</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>768ECE7D-BB80-47A0-AE4A-4AA679468977</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>89264586-3988-49CB-A0D1-7303A009E560</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -343,6 +366,19 @@
 			<dict>
 				<key>destinationuid</key>
 				<string>5ED18AC3-4DEE-4486-8717-A5742EB02AA7</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>920760D8-E7AC-4EA8-A459-198BB5FA924A</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>D84E30BC-1391-41D8-908A-D95EFCA645A4</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -498,6 +534,19 @@
 				<false/>
 			</dict>
 		</array>
+		<key>D84E30BC-1391-41D8-908A-D95EFCA645A4</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>9738906C-61C6-4DE3-AB58-676023F12080</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
 		<key>E1E3A9E7-0EEF-4745-A62C-79E46A2AF51F</key>
 		<array>
 			<dict>
@@ -564,42 +613,12 @@
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>browser</key>
-				<string></string>
-				<key>spaces</key>
-				<string></string>
-				<key>url</key>
-				<string>{var:url}</string>
-				<key>utf8</key>
-				<true/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.openurl</string>
-			<key>uid</key>
-			<string>2F6636A4-F41B-4D28-9AF3-754CE5B9975A</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>triggerid</key>
-				<string>search</string>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.trigger.external</string>
-			<key>uid</key>
-			<string>7FB90320-6EAF-415A-9DD9-50B79BC0F901</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
 				<key>alfredfiltersresults</key>
 				<false/>
 				<key>alfredfiltersresultsmatchmode</key>
 				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<false/>
 				<key>argumenttrimmode</key>
 				<integer>0</integer>
 				<key>argumenttype</key>
@@ -638,7 +657,39 @@
 			<key>uid</key>
 			<string>53172C76-0F6F-4E84-8C96-D0E81629CBA4</string>
 			<key>version</key>
-			<integer>2</integer>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>browser</key>
+				<string></string>
+				<key>spaces</key>
+				<string></string>
+				<key>url</key>
+				<string>{var:url}</string>
+				<key>utf8</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.openurl</string>
+			<key>uid</key>
+			<string>2F6636A4-F41B-4D28-9AF3-754CE5B9975A</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>triggerid</key>
+				<string>search</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.external</string>
+			<key>uid</key>
+			<string>7FB90320-6EAF-415A-9DD9-50B79BC0F901</string>
+			<key>version</key>
+			<integer>1</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -683,8 +734,32 @@ variables={allvars}
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>test -n "$autopaste" &amp;&amp; flags+=(--paste)
+./zh citekey $flags $url</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>D84E30BC-1391-41D8-908A-D95EFCA645A4</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>externaltriggerid</key>
-				<string>attachments</string>
+				<string>better-bibtex</string>
 				<key>passinputasargument</key>
 				<false/>
 				<key>passvariables</key>
@@ -695,7 +770,39 @@ variables={allvars}
 			<key>type</key>
 			<string>alfred.workflow.output.callexternaltrigger</string>
 			<key>uid</key>
-			<string>67475FEA-6BC4-4EBA-B18B-5BF88B41D320</string>
+			<string>89264586-3988-49CB-A0D1-7303A009E560</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>triggerid</key>
+				<string>better-bibtex</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.external</string>
+			<key>uid</key>
+			<string>920760D8-E7AC-4EA8-A459-198BB5FA924A</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>externaltriggerid</key>
+				<string>search</string>
+				<key>passinputasargument</key>
+				<true/>
+				<key>passvariables</key>
+				<false/>
+				<key>workflowbundleid</key>
+				<string>self</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.callexternaltrigger</string>
+			<key>uid</key>
+			<string>AB53FBF0-1EC6-43BE-96BA-A30A9E6E9B66</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
@@ -706,6 +813,8 @@ variables={allvars}
 				<false/>
 				<key>alfredfiltersresultsmatchmode</key>
 				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<false/>
 				<key>argumenttrimmode</key>
 				<integer>0</integer>
 				<key>argumenttype</key>
@@ -744,30 +853,49 @@ variables={allvars}
 			<key>uid</key>
 			<string>7D722132-9CB1-4556-B401-5A32F089CB28</string>
 			<key>version</key>
-			<integer>2</integer>
+			<integer>3</integer>
 		</dict>
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>concurrently</key>
-				<false/>
-				<key>escaping</key>
-				<integer>102</integer>
-				<key>script</key>
-				<string>/usr/bin/open "$1"</string>
-				<key>scriptargtype</key>
-				<integer>1</integer>
-				<key>scriptfile</key>
-				<string></string>
-				<key>type</key>
-				<integer>0</integer>
+				<key>focusedappvariable</key>
+				<true/>
+				<key>focusedappvariablename</key>
+				<string>autopaste</string>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.action.script</string>
+			<string>alfred.workflow.trigger.snippet</string>
 			<key>uid</key>
-			<string>5D1E28B8-C1D6-495B-856F-F48C59150FE0</string>
+			<string>5CFF0FD7-987C-4910-AD1E-0C40BF66585A</string>
 			<key>version</key>
-			<integer>2</integer>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>inputstring</key>
+				<string>{var:action}</string>
+				<key>matchcasesensitive</key>
+				<true/>
+				<key>matchmode</key>
+				<integer>0</integer>
+				<key>matchstring</key>
+				<string>copy-citekey</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.utility.filter</string>
+			<key>uid</key>
+			<string>768ECE7D-BB80-47A0-AE4A-4AA679468977</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>type</key>
+			<string>alfred.workflow.utility.hidealfred</string>
+			<key>uid</key>
+			<string>9738906C-61C6-4DE3-AB58-676023F12080</string>
+			<key>version</key>
+			<integer>1</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -776,6 +904,8 @@ variables={allvars}
 				<false/>
 				<key>alfredfiltersresultsmatchmode</key>
 				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<false/>
 				<key>argumenttrimmode</key>
 				<integer>0</integer>
 				<key>argumenttype</key>
@@ -812,41 +942,24 @@ variables={allvars}
 			<key>uid</key>
 			<string>AF2071DD-5096-4528-8E57-EFD4E1817FEA</string>
 			<key>version</key>
-			<integer>2</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>focusedappvariable</key>
-				<true/>
-				<key>focusedappvariablename</key>
-				<string>autopaste</string>
-				<key>keyword</key>
-				<string>zzot</string>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.trigger.snippet</string>
-			<key>uid</key>
-			<string>5CFF0FD7-987C-4910-AD1E-0C40BF66585A</string>
-			<key>version</key>
-			<integer>1</integer>
+			<integer>3</integer>
 		</dict>
 		<dict>
 			<key>config</key>
 			<dict>
 				<key>externaltriggerid</key>
-				<string>search</string>
+				<string>attachments</string>
 				<key>passinputasargument</key>
-				<true/>
-				<key>passvariables</key>
 				<false/>
+				<key>passvariables</key>
+				<true/>
 				<key>workflowbundleid</key>
 				<string>self</string>
 			</dict>
 			<key>type</key>
 			<string>alfred.workflow.output.callexternaltrigger</string>
 			<key>uid</key>
-			<string>AB53FBF0-1EC6-43BE-96BA-A30A9E6E9B66</string>
+			<string>67475FEA-6BC4-4EBA-B18B-5BF88B41D320</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
@@ -862,6 +975,29 @@ variables={allvars}
 			<string>7E1721EF-1D18-410E-8ACF-810BE8A960A7</string>
 			<key>version</key>
 			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>/usr/bin/open "$1"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>5D1E28B8-C1D6-495B-856F-F48C59150FE0</string>
+			<key>version</key>
+			<integer>2</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -908,6 +1044,8 @@ variables={allvars}
 				<false/>
 				<key>alfredfiltersresultsmatchmode</key>
 				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<false/>
 				<key>argumenttrimmode</key>
 				<integer>0</integer>
 				<key>argumenttype</key>
@@ -957,7 +1095,7 @@ EOS</string>
 			<key>uid</key>
 			<string>F9040898-2FD2-4C79-B34F-1EEAD90BE256</string>
 			<key>version</key>
-			<integer>2</integer>
+			<integer>3</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -1001,59 +1139,12 @@ EOS</string>
 			<key>config</key>
 			<dict>
 				<key>triggerid</key>
-				<string>citations</string>
+				<string>copy-citation</string>
 			</dict>
 			<key>type</key>
 			<string>alfred.workflow.trigger.external</string>
 			<key>uid</key>
-			<string>7F4D56BD-6BC8-4206-87AC-33E2F9C05A2E</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>concurrently</key>
-				<false/>
-				<key>escaping</key>
-				<integer>102</integer>
-				<key>script</key>
-				<string>flags=()
-
-test -n "$bibliography" &amp;&amp; flags+=(--bibliography)
-test -n "$autopaste" &amp;&amp; flags+=(--paste)
-
-./zh copy $flags "$style" "$id"</string>
-				<key>scriptargtype</key>
-				<integer>1</integer>
-				<key>scriptfile</key>
-				<string></string>
-				<key>type</key>
-				<integer>5</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.script</string>
-			<key>uid</key>
-			<string>A950947F-8EA7-4749-AF55-2C7F9D6E695E</string>
-			<key>version</key>
-			<integer>2</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>externaltriggerid</key>
-				<string>copy-citation</string>
-				<key>passinputasargument</key>
-				<false/>
-				<key>passvariables</key>
-				<true/>
-				<key>workflowbundleid</key>
-				<string>self</string>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.output.callexternaltrigger</string>
-			<key>uid</key>
-			<string>8F85FB21-8921-402F-BF70-C7C35E769212</string>
+			<string>AEE6452E-9186-4609-8AD4-D74F469F1A79</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
@@ -1064,6 +1155,8 @@ test -n "$autopaste" &amp;&amp; flags+=(--paste)
 				<false/>
 				<key>alfredfiltersresultsmatchmode</key>
 				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<false/>
 				<key>argumenttrimmode</key>
 				<integer>0</integer>
 				<key>argumenttype</key>
@@ -1101,41 +1194,67 @@ test -n "$autopaste" &amp;&amp; flags+=(--paste)
 			<key>uid</key>
 			<string>8956B5DB-42F0-4570-9265-ECD302239D56</string>
 			<key>version</key>
-			<integer>2</integer>
+			<integer>3</integer>
 		</dict>
 		<dict>
 			<key>config</key>
 			<dict>
 				<key>triggerid</key>
-				<string>copy-citation</string>
+				<string>citations</string>
 			</dict>
 			<key>type</key>
 			<string>alfred.workflow.trigger.external</string>
 			<key>uid</key>
-			<string>AEE6452E-9186-4609-8AD4-D74F469F1A79</string>
+			<string>7F4D56BD-6BC8-4206-87AC-33E2F9C05A2E</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>argument</key>
-				<string>.
-/------- COPY CITATION IN --------\
-query={query}
-variables={allvars}
-\---------------------------------/</string>
-				<key>cleardebuggertext</key>
+				<key>externaltriggerid</key>
+				<string>copy-citation</string>
+				<key>passinputasargument</key>
 				<false/>
-				<key>processoutputs</key>
+				<key>passvariables</key>
 				<true/>
+				<key>workflowbundleid</key>
+				<string>self</string>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.utility.debug</string>
+			<string>alfred.workflow.output.callexternaltrigger</string>
 			<key>uid</key>
-			<string>CDDDFF55-9266-40A0-B22F-89192559E0E3</string>
+			<string>8F85FB21-8921-402F-BF70-C7C35E769212</string>
 			<key>version</key>
 			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>flags=()
+
+test -n "$bibliography" &amp;&amp; flags+=(--bibliography)
+test -n "$autopaste" &amp;&amp; flags+=(--paste)
+
+./zh copy $flags "$style" "$id"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>5</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>A950947F-8EA7-4749-AF55-2C7F9D6E695E</string>
+			<key>version</key>
+			<integer>2</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -1188,6 +1307,27 @@ variables={allvars}
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>argument</key>
+				<string>.
+/------- COPY CITATION IN --------\
+query={query}
+variables={allvars}
+\---------------------------------/</string>
+				<key>cleardebuggertext</key>
+				<false/>
+				<key>processoutputs</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.utility.debug</string>
+			<key>uid</key>
+			<string>CDDDFF55-9266-40A0-B22F-89192559E0E3</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>externaltriggerid</key>
 				<string>setvar</string>
 				<key>passinputasargument</key>
@@ -1201,19 +1341,6 @@ variables={allvars}
 			<string>alfred.workflow.output.callexternaltrigger</string>
 			<key>uid</key>
 			<string>49F6E2D6-5BF1-4E9A-A7CD-A4E04C30DFA8</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>triggerid</key>
-				<string>setvar</string>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.trigger.external</string>
-			<key>uid</key>
-			<string>780DD041-49A4-44BF-89BE-4D53688296C0</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
@@ -1262,6 +1389,19 @@ variables={allvars}
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>triggerid</key>
+				<string>setvar</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.external</string>
+			<key>uid</key>
+			<string>780DD041-49A4-44BF-89BE-4D53688296C0</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>argument</key>
 				<string>.
 /----------- SETVAR IN -----------\
@@ -1302,23 +1442,12 @@ variables={allvars}
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>triggerid</key>
-				<string>config</string>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.trigger.external</string>
-			<key>uid</key>
-			<string>1AF47A02-39EA-41B0-BD44-C933C31014F5</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
 				<key>alfredfiltersresults</key>
 				<false/>
 				<key>alfredfiltersresultsmatchmode</key>
 				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<false/>
 				<key>argumenttrimmode</key>
 				<integer>0</integer>
 				<key>argumenttype</key>
@@ -1362,26 +1491,7 @@ test -n "$style" &amp;&amp; {
 			<key>uid</key>
 			<string>F912A5F2-6586-498F-8A32-C11B59C687F5</string>
 			<key>version</key>
-			<integer>2</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>externaltriggerid</key>
-				<string>{var:next}</string>
-				<key>passinputasargument</key>
-				<false/>
-				<key>passvariables</key>
-				<false/>
-				<key>workflowbundleid</key>
-				<string>self</string>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.output.callexternaltrigger</string>
-			<key>uid</key>
-			<string>DA0C4D5F-7B13-41B9-B85A-091DD3EE9CAD</string>
-			<key>version</key>
-			<integer>1</integer>
+			<integer>3</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -1390,6 +1500,8 @@ test -n "$style" &amp;&amp; {
 				<false/>
 				<key>alfredfiltersresultsmatchmode</key>
 				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<false/>
 				<key>argumenttrimmode</key>
 				<integer>0</integer>
 				<key>argumenttype</key>
@@ -1428,24 +1540,37 @@ test -n "$style" &amp;&amp; {
 			<key>uid</key>
 			<string>674740C4-BFDA-44C8-A478-586EF06217BF</string>
 			<key>version</key>
-			<integer>2</integer>
+			<integer>3</integer>
 		</dict>
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>inputstring</key>
+				<key>externaltriggerid</key>
 				<string>{var:next}</string>
-				<key>matchcasesensitive</key>
-				<true/>
-				<key>matchmode</key>
-				<integer>1</integer>
-				<key>matchstring</key>
-				<string></string>
+				<key>passinputasargument</key>
+				<false/>
+				<key>passvariables</key>
+				<false/>
+				<key>workflowbundleid</key>
+				<string>self</string>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.utility.filter</string>
+			<string>alfred.workflow.output.callexternaltrigger</string>
 			<key>uid</key>
-			<string>3636139E-A061-4685-8914-AC3351A9B797</string>
+			<string>DA0C4D5F-7B13-41B9-B85A-091DD3EE9CAD</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>triggerid</key>
+				<string>config</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.external</string>
+			<key>uid</key>
+			<string>1AF47A02-39EA-41B0-BD44-C933C31014F5</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
@@ -1465,6 +1590,25 @@ test -n "$style" &amp;&amp; {
 			<string>alfred.workflow.utility.filter</string>
 			<key>uid</key>
 			<string>B07E7A55-14DC-42F2-8321-17C2E8090E03</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>inputstring</key>
+				<string>{var:next}</string>
+				<key>matchcasesensitive</key>
+				<true/>
+				<key>matchmode</key>
+				<integer>1</integer>
+				<key>matchstring</key>
+				<string></string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.utility.filter</string>
+			<key>uid</key>
+			<string>3636139E-A061-4685-8914-AC3351A9B797</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
@@ -1515,6 +1659,8 @@ variables={allvars}
 				<false/>
 				<key>alfredfiltersresultsmatchmode</key>
 				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<false/>
 				<key>argumenttrimmode</key>
 				<integer>0</integer>
 				<key>argumenttype</key>
@@ -1551,7 +1697,7 @@ variables={allvars}
 			<key>uid</key>
 			<string>ED06F3FD-4D96-4866-9EEC-11B64FB6D558</string>
 			<key>version</key>
-			<integer>2</integer>
+			<integer>3</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -1674,25 +1820,6 @@ variables={allvars}
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>externaltriggerid</key>
-				<string>notify</string>
-				<key>passinputasargument</key>
-				<false/>
-				<key>passvariables</key>
-				<true/>
-				<key>workflowbundleid</key>
-				<string>self</string>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.output.callexternaltrigger</string>
-			<key>uid</key>
-			<string>88776196-8BC2-4B74-9B0E-15961AAC9A5C</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
 				<key>concurrently</key>
 				<false/>
 				<key>escaping</key>
@@ -1731,6 +1858,25 @@ test -n "$notifytext" &amp;&amp; flags+=(--text "$notifytext")
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>externaltriggerid</key>
+				<string>notify</string>
+				<key>passinputasargument</key>
+				<false/>
+				<key>passvariables</key>
+				<true/>
+				<key>workflowbundleid</key>
+				<string>self</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.callexternaltrigger</string>
+			<key>uid</key>
+			<string>88776196-8BC2-4B74-9B0E-15961AAC9A5C</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
 	</array>
 	<key>readme</key>
 	<string>ZotHero
@@ -1752,21 +1898,21 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>1770</integer>
 			<key>ypos</key>
-			<integer>730</integer>
+			<integer>875</integer>
 		</dict>
 		<key>09DFDC0D-394F-470C-974D-BB4AAB208CED</key>
 		<dict>
 			<key>xpos</key>
 			<integer>860</integer>
 			<key>ypos</key>
-			<integer>1290</integer>
+			<integer>1435</integer>
 		</dict>
 		<key>118BDCA4-C25F-449C-93D8-877E192E22D2</key>
 		<dict>
 			<key>xpos</key>
 			<integer>510</integer>
 			<key>ypos</key>
-			<integer>950</integer>
+			<integer>1095</integer>
 		</dict>
 		<key>1AF47A02-39EA-41B0-BD44-C933C31014F5</key>
 		<dict>
@@ -1775,7 +1921,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>70</integer>
 			<key>ypos</key>
-			<integer>920</integer>
+			<integer>1065</integer>
 		</dict>
 		<key>1CA1CA5F-6531-4BE6-8FA9-734C04C5EF4B</key>
 		<dict>
@@ -1784,7 +1930,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>730</integer>
 			<key>ypos</key>
-			<integer>1140</integer>
+			<integer>1285</integer>
 		</dict>
 		<key>256A2232-79C6-4956-9EDA-3EEDB0EE1CDF</key>
 		<dict>
@@ -1795,7 +1941,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>1290</integer>
 			<key>ypos</key>
-			<integer>420</integer>
+			<integer>565</integer>
 		</dict>
 		<key>27AB4926-3249-4A80-85B5-6176911ACE7D</key>
 		<dict>
@@ -1804,7 +1950,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>860</integer>
 			<key>ypos</key>
-			<integer>380</integer>
+			<integer>525</integer>
 		</dict>
 		<key>2B20149E-1275-476A-9CAA-254CB2DC74E0</key>
 		<dict>
@@ -1813,7 +1959,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>860</integer>
 			<key>ypos</key>
-			<integer>1460</integer>
+			<integer>1605</integer>
 		</dict>
 		<key>2C059A51-AE82-49BA-A5E9-13824D15C4EC</key>
 		<dict>
@@ -1822,7 +1968,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>730</integer>
 			<key>ypos</key>
-			<integer>410</integer>
+			<integer>555</integer>
 		</dict>
 		<key>2F6636A4-F41B-4D28-9AF3-754CE5B9975A</key>
 		<dict>
@@ -1840,7 +1986,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>730</integer>
 			<key>ypos</key>
-			<integer>250</integer>
+			<integer>395</integer>
 		</dict>
 		<key>3636139E-A061-4685-8914-AC3351A9B797</key>
 		<dict>
@@ -1849,7 +1995,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>1660</integer>
 			<key>ypos</key>
-			<integer>950</integer>
+			<integer>1095</integer>
 		</dict>
 		<key>3D2145B0-1260-41B9-9EC1-A78EB5CA2400</key>
 		<dict>
@@ -1858,7 +2004,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>730</integer>
 			<key>ypos</key>
-			<integer>760</integer>
+			<integer>905</integer>
 		</dict>
 		<key>49F6E2D6-5BF1-4E9A-A7CD-A4E04C30DFA8</key>
 		<dict>
@@ -1867,7 +2013,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>860</integer>
 			<key>ypos</key>
-			<integer>730</integer>
+			<integer>875</integer>
 		</dict>
 		<key>4C4E438A-90C4-463C-A31C-435EB61F8236</key>
 		<dict>
@@ -1894,7 +2040,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>1690</integer>
 			<key>ypos</key>
-			<integer>590</integer>
+			<integer>735</integer>
 		</dict>
 		<key>5CFF0FD7-987C-4910-AD1E-0C40BF66585A</key>
 		<dict>
@@ -1914,7 +2060,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>1450</integer>
 			<key>ypos</key>
-			<integer>220</integer>
+			<integer>365</integer>
 		</dict>
 		<key>5ED18AC3-4DEE-4486-8717-A5742EB02AA7</key>
 		<dict>
@@ -1925,7 +2071,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>1490</integer>
 			<key>ypos</key>
-			<integer>1550</integer>
+			<integer>1695</integer>
 		</dict>
 		<key>65A74884-90D6-4453-963E-454CF4C84DCB</key>
 		<dict>
@@ -1934,7 +2080,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>1110</integer>
 			<key>ypos</key>
-			<integer>1020</integer>
+			<integer>1165</integer>
 		</dict>
 		<key>674740C4-BFDA-44C8-A478-586EF06217BF</key>
 		<dict>
@@ -1945,7 +2091,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>270</integer>
 			<key>ypos</key>
-			<integer>920</integer>
+			<integer>1065</integer>
 		</dict>
 		<key>67475FEA-6BC4-4EBA-B18B-5BF88B41D320</key>
 		<dict>
@@ -1954,7 +2100,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>860</integer>
 			<key>ypos</key>
-			<integer>220</integer>
+			<integer>365</integer>
 		</dict>
 		<key>7123D0FE-B9BA-4300-9D28-410EE7B10E56</key>
 		<dict>
@@ -1963,7 +2109,16 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>730</integer>
 			<key>ypos</key>
-			<integer>1320</integer>
+			<integer>1465</integer>
+		</dict>
+		<key>768ECE7D-BB80-47A0-AE4A-4AA679468977</key>
+		<dict>
+			<key>note</key>
+			<string>$action = open-in-zotero</string>
+			<key>xpos</key>
+			<integer>730</integer>
+			<key>ypos</key>
+			<integer>240</integer>
 		</dict>
 		<key>780DD041-49A4-44BF-89BE-4D53688296C0</key>
 		<dict>
@@ -1972,7 +2127,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>1050</integer>
 			<key>ypos</key>
-			<integer>730</integer>
+			<integer>875</integer>
 		</dict>
 		<key>7D722132-9CB1-4556-B401-5A32F089CB28</key>
 		<dict>
@@ -1992,7 +2147,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>1050</integer>
 			<key>ypos</key>
-			<integer>220</integer>
+			<integer>365</integer>
 		</dict>
 		<key>7F4D56BD-6BC8-4206-87AC-33E2F9C05A2E</key>
 		<dict>
@@ -2001,7 +2156,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>70</integer>
 			<key>ypos</key>
-			<integer>560</integer>
+			<integer>705</integer>
 		</dict>
 		<key>7FB90320-6EAF-415A-9DD9-50B79BC0F901</key>
 		<dict>
@@ -2019,7 +2174,16 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>1110</integer>
 			<key>ypos</key>
-			<integer>1550</integer>
+			<integer>1695</integer>
+		</dict>
+		<key>89264586-3988-49CB-A0D1-7303A009E560</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>12</integer>
+			<key>xpos</key>
+			<integer>860</integer>
+			<key>ypos</key>
+			<integer>210</integer>
 		</dict>
 		<key>8956B5DB-42F0-4570-9265-ECD302239D56</key>
 		<dict>
@@ -2030,7 +2194,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>270</integer>
 			<key>ypos</key>
-			<integer>560</integer>
+			<integer>705</integer>
 		</dict>
 		<key>8E44403F-E563-4611-9D78-046CD3CB6E61</key>
 		<dict>
@@ -2039,7 +2203,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>1290</integer>
 			<key>ypos</key>
-			<integer>1550</integer>
+			<integer>1695</integer>
 		</dict>
 		<key>8F85FB21-8921-402F-BF70-C7C35E769212</key>
 		<dict>
@@ -2048,7 +2212,25 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>860</integer>
 			<key>ypos</key>
-			<integer>560</integer>
+			<integer>705</integer>
+		</dict>
+		<key>920760D8-E7AC-4EA8-A459-198BB5FA924A</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>12</integer>
+			<key>xpos</key>
+			<integer>1050</integer>
+			<key>ypos</key>
+			<integer>210</integer>
+		</dict>
+		<key>9738906C-61C6-4DE3-AB58-676023F12080</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>12</integer>
+			<key>xpos</key>
+			<integer>1450</integer>
+			<key>ypos</key>
+			<integer>240</integer>
 		</dict>
 		<key>9A384EEE-AA82-4FC5-8B13-1F7319613854</key>
 		<dict>
@@ -2068,7 +2250,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>1450</integer>
 			<key>ypos</key>
-			<integer>560</integer>
+			<integer>705</integer>
 		</dict>
 		<key>A966EACB-331B-488E-937C-5D8DE7767B9D</key>
 		<dict>
@@ -2077,7 +2259,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>1110</integer>
 			<key>ypos</key>
-			<integer>1390</integer>
+			<integer>1535</integer>
 		</dict>
 		<key>AB53FBF0-1EC6-43BE-96BA-A30A9E6E9B66</key>
 		<dict>
@@ -2097,7 +2279,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>1050</integer>
 			<key>ypos</key>
-			<integer>560</integer>
+			<integer>705</integer>
 		</dict>
 		<key>AF2071DD-5096-4528-8E57-EFD4E1817FEA</key>
 		<dict>
@@ -2108,7 +2290,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>1250</integer>
 			<key>ypos</key>
-			<integer>220</integer>
+			<integer>365</integer>
 		</dict>
 		<key>B07E7A55-14DC-42F2-8321-17C2E8090E03</key>
 		<dict>
@@ -2117,7 +2299,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>730</integer>
 			<key>ypos</key>
-			<integer>950</integer>
+			<integer>1095</integer>
 		</dict>
 		<key>C66B4BF4-4CED-4B3C-962E-C2F190B575EB</key>
 		<dict>
@@ -2128,7 +2310,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>1450</integer>
 			<key>ypos</key>
-			<integer>730</integer>
+			<integer>875</integer>
 		</dict>
 		<key>C93018EF-4629-4261-B997-453D8F2D6856</key>
 		<dict>
@@ -2137,7 +2319,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>510</integer>
 			<key>ypos</key>
-			<integer>590</integer>
+			<integer>735</integer>
 		</dict>
 		<key>CDDDFF55-9266-40A0-B22F-89192559E0E3</key>
 		<dict>
@@ -2146,7 +2328,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>1290</integer>
 			<key>ypos</key>
-			<integer>590</integer>
+			<integer>735</integer>
 		</dict>
 		<key>D78E4F18-6D77-4514-A55F-8894C014AB60</key>
 		<dict>
@@ -2155,14 +2337,23 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>730</integer>
 			<key>ypos</key>
-			<integer>590</integer>
+			<integer>735</integer>
+		</dict>
+		<key>D84E30BC-1391-41D8-908A-D95EFCA645A4</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>12</integer>
+			<key>xpos</key>
+			<integer>1250</integer>
+			<key>ypos</key>
+			<integer>210</integer>
 		</dict>
 		<key>DA0C4D5F-7B13-41B9-B85A-091DD3EE9CAD</key>
 		<dict>
 			<key>xpos</key>
 			<integer>1770</integer>
 			<key>ypos</key>
-			<integer>920</integer>
+			<integer>1065</integer>
 		</dict>
 		<key>E1E3A9E7-0EEF-4745-A62C-79E46A2AF51F</key>
 		<dict>
@@ -2171,7 +2362,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>730</integer>
 			<key>ypos</key>
-			<integer>1490</integer>
+			<integer>1635</integer>
 		</dict>
 		<key>ED06F3FD-4D96-4866-9EEC-11B64FB6D558</key>
 		<dict>
@@ -2180,7 +2371,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>860</integer>
 			<key>ypos</key>
-			<integer>1110</integer>
+			<integer>1255</integer>
 		</dict>
 		<key>F8F07F3C-11D6-44F1-BFE5-66F70A8C0253</key>
 		<dict>
@@ -2189,7 +2380,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>1290</integer>
 			<key>ypos</key>
-			<integer>760</integer>
+			<integer>905</integer>
 		</dict>
 		<key>F9040898-2FD2-4C79-B34F-1EEAD90BE256</key>
 		<dict>
@@ -2200,7 +2391,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>1450</integer>
 			<key>ypos</key>
-			<integer>390</integer>
+			<integer>535</integer>
 		</dict>
 		<key>F912A5F2-6586-498F-8A32-C11B59C687F5</key>
 		<dict>
@@ -2209,7 +2400,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 			<key>xpos</key>
 			<integer>860</integer>
 			<key>ypos</key>
-			<integer>920</integer>
+			<integer>1065</integer>
 		</dict>
 	</dict>
 	<key>variables</key>
@@ -2217,6 +2408,8 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 		<key>ATTACHMENTS_DIR</key>
 		<string></string>
 		<key>CITE_STYLE</key>
+		<string>http://www.zotero.org/styles/ieee</string>
+		<key>COPY_CITEKEY_MOD</key>
 		<string></string>
 		<key>LOCALE</key>
 		<string></string>
@@ -2224,7 +2417,7 @@ Edit the `ZOTERO_DIR` variable to point to Zotero 5's data directory if you aren
 		<string></string>
 	</dict>
 	<key>version</key>
-	<string>1.2.2</string>
+	<string>1.2.3</string>
 	<key>webaddress</key>
 	<string>https://github.com/deanishe/zothero</string>
 </dict>

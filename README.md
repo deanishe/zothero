@@ -50,7 +50,7 @@ Usage
 These are the workflow's default keywords in Alfred:
 
 - `zot <query>` — Search your Zotero database (common fields).
-    - `↩` — Open the entry in Zotero.
+    - `↩` — Open the entry in Zotero. (`fn+↩` is an alternate)
     - `⌘↩` — Copy citation to the pasteboard (see [Configuration](#configuration)).
     - `⌥↩` — Copy bibliography-style citation to the pasteboard (see [Configuration](#configuration)).
     - `⇧↩` — View entry attachments (if present).
@@ -60,6 +60,8 @@ These are the workflow's default keywords in Alfred:
         - `⌥↩` — Copy bibliography-style citation in selected style.
         - `^↩` — Set style as default.
     - This search can also be triggered by typing a snippet (which you must first assign yourself in Alfred Preferences)
+    - When the Better-Bibtex plugin for Zotero is installed and `COPY_CITEKEY_MOD` is set to any of `-`(no modifier), `alt`, `ctrl`, `cmd`, `fn`, `shift`, the "Copy citekey" functionality can be enabled to override above operations
+      
 - `zot:[<query>]` — Search a specific field.
     - `↩` — Select a field to search against.
 - `zotconf [<query>]` — View and edit workflow configuration.
