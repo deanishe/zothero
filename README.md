@@ -32,6 +32,7 @@ Features
 - Copy citations using any [CSL][csl] style you have installed in Zotero
 - Copy citations either in citation/note style or bibliography style
 - Copy citations in any [locale supported by CSL](#locales)
+- Copy Better BibTeX citekeys
 - Citations are copied in multiple formats, so the right data are automatically pasted into the application you're using
 - Trigger search while you type using the Snippet Trigger (you must assign the snippet keyword yourself in Alfred Preferences)
 
@@ -41,6 +42,8 @@ Download & installation
 -----------------------
 
 Download the `ZotHero-XYZ.alfredworkflow` file from [GitHub releases](https://github.com/deanishe/zothero/releases), and double-click the downloaded file to install.
+
+**Note**: Versions 1.3.0 and later are only compatible with Alfred 4+. If you're still using Alfred 3, download [v1.2.2][v1.2.2].
 
 
 <a name="usage"></a>
@@ -61,7 +64,7 @@ These are the workflow's default keywords in Alfred:
         - `^↩` — Set style as default.
     - This search can also be triggered by typing a snippet (which you must first assign yourself in Alfred Preferences)
     - When the Better-Bibtex plugin for Zotero is installed and `COPY_CITEKEY_MOD` is set to any of `-`(no modifier), `alt`, `ctrl`, `cmd`, `fn`, `shift`, the "Copy citekey" functionality can be enabled to override above operations
-      
+
 - `zot:[<query>]` — Search a specific field.
     - `↩` — Select a field to search against.
 - `zotconf [<query>]` — View and edit workflow configuration.
@@ -182,12 +185,14 @@ Theses are all settings available in the [workflow configuration sheet][conf-she
 You probably shouldn't edit the `CITE_STYLE` or `LOCALE` variables yourself, as there's no guarantee the value you set is actually available. Adjust them using the `zotconf` keyword.
 
 
-|      Variable     |                                Meaning                                 |
-|-------------------|------------------------------------------------------------------------|
-| `ATTACHMENTS_DIR` | Path to your Zotero attachments. Read from Zotero's config by default. |
-| `CITE_STYLE`      | Citation style copied by `⌘↩` and `⌥↩`                                 |
-| `LOCALE`          | Locale for citations. Default: `en-US` (US English).                   |
-| `ZOTERO_DIR`      | Path to your Zotero data. Read from Zotero's config by default.        |
+|      Variable      |                                 Meaning                                 |
+|--------------------|-------------------------------------------------------------------------|
+| `ATTACHMENTS_DIR`  | Path to your Zotero attachments. Read from Zotero's config by default.  |
+| `CITE_STYLE`       | Citation style copied by `⌘↩` and `⌥↩`                                  |
+| `LOCALE`           | Locale for citations. Default: `en-US` (US English).                    |
+| `ZOTERO_DIR`       | Path to your Zotero data. Read from Zotero's config by default.         |
+| `COPY_CITEKEY_MOD` | Set to copy Better BibTeX citekey instead of CSL citation/bibliography. |
+
 
 
 <a name="licence--thanks"></a>
@@ -217,3 +222,4 @@ The [Zorro icon][icon-source] was created by [Dan Lowenstein][lowenstein] from [
 [releases]: https://github.com/deanishe/zothero/releases
 [smargh]: https://github.com/fractaledmind
 [zotquery]: https://github.com/fractaledmind/alfred_zotquery
+[v1.2.2]: https://github.com/deanishe/zothero/releases/tag/v1.2.2
