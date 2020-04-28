@@ -83,6 +83,7 @@ class Entry(AttrDict):
         attachments (list): Sequence of `Attachment` objects.
         notes (list): Plaintext (Unicode) Entry notes.
         abstract (unicode): Entry abstract.
+        citekey (unicode or None): Better Bibtex citekey.
 
     """
 

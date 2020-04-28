@@ -25,7 +25,7 @@ from .zotero import Entry
 # Version of the database schema/data format.
 # Increment this every time the schema or JSON format changes to
 # invalidate the existing cache.
-DB_VERSION = 7
+DB_VERSION = 8
 
 # SQL schema for the search database. The Entry is also stored in the
 # database as JSON for speed (it takes 7 SQL queries to retrieve an

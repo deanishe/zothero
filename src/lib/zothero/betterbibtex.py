@@ -1,44 +1,66 @@
+# encoding: utf-8
+#
+# Copyright (c) 2020 @yarray
+# Copyright (c) 2020 Dean Jackson <deanishe@deanishe.net>
+#
+# MIT Licence. See http://opensource.org/licenses/MIT
+#
+
 import json
 import logging
 import os
-import sys
 import sqlite3
 
-from .config import read as read_config
+from .util import timed
 
 log = logging.getLogger(__name__)
-datadir, _ = config = read_config()
+
 
 SQL = "SELECT data FROM `better-bibtex` WHERE name = 'better-bibtex.citekey';"
 
 
-class BetterBibTex:
-    def __init__(self, zot_data_dir=None):
-        dbpath = os.path.join(zot_data_dir or datadir, 'better-bibtex.sqlite')
-        self.conn = None
+class BetterBibTex(object):
+    """Read citkeys from BetterBibTex database.
 
-        if os.path.exists(dbpath):
-            try:
-                self.conn = sqlite3.connect(dbpath)
-            except Exception as e:
-                log.warn('Open Better Bibtex database error: ' + str(e))
-                return
-        else:
-            log.warn('Better Bibtex database not found')
+    Attributes:
+        refkeys (dict): ``(library ID, item Key): citekey`` mapping.
+
+    """
+
+    def __init__(self, datadir):
+        """Load Better Bibtex database from Zotero data directory.
+
+        Args:
+            datadir (unicode, optional): Zotero's data directory.
+
+        Raises:
+            RuntimeError: Raised if Better Bibtex database doesn't exist.
+
+        """
+        self._refkeys = {}
+        self.exists = False
+        dbpath = os.path.join(datadir, 'better-bibtex.sqlite')
+        if not os.path.exists(dbpath):
             return
 
-        try:
-            row = self.conn.execute(SQL).fetchone()
+        conn = sqlite3.connect(dbpath)
+        with timed('load Better Bibtex data'):
+            row = conn.execute(SQL).fetchone()
             data = json.loads(row[0])['data']
-            self.refkeys = {(str(ck['libraryID']), ck['itemKey']):
-                            ck['citekey']
-                            for ck in data}
-        except Exception:
-            log.warn('Better Bibtex database corrupted')
+            self._refkeys = {
+                unicode(ck['libraryID']) + '_' + ck['itemKey']: ck['citekey']
+                for ck in data
+            }
+        self.exists = True
 
-    def search(self, url):
-        ''' given alfred item '''
-        if self.conn is None or len(url) == 0:
-            return []
-        lib_id, key = url.split('/')[-1].split('_')
-        return self.refkeys[(lib_id, key)]
+    def citekey(self, key):
+        """Return Better Bibtex citekey for Zotero item.
+
+        Args:
+            key (unicode): ``libraryID_itemKey`` Better Bibtex key.
+
+        Returns:
+            unicode: Citekey
+
+        """
+        return self._refkeys.get(key)

@@ -18,6 +18,7 @@ Usage:
     zh clear
     zh config [<query>]
     zh copy [--bibliography] [--paste] <style> <id>
+    zh copy [--paste] <citekey>
     zh fields [<query>]
     zh locale [<query>]
     zh notify [--title <msg>] [--text <msg>]
@@ -25,7 +26,6 @@ Usage:
     zh search <query>
     zh style [--style <key>] [<query>]
     zh setvar <key> <value>
-    zh citekey <url>
     zh --help
 
 Options:
@@ -160,7 +160,8 @@ def do_search(query):
         log.debug(u'%4d. %s', i + 1, e)
         f = EntryFormatter(e)
         sub = u'{} {}'.format(f.creators, f.year)
-        url = 'zotero://select/items/{}_{}'.format(e.library, e.key)
+        key = u'{}_{}'.format(e.library, e.key)
+        url = u'zotero://select/items/' + key
         if e.attachments:
             sub += u' Attachments: ' + str(len(e.attachments))
 
@@ -180,6 +181,7 @@ def do_search(query):
 
         it.setvar('action', 'open-in-zotero')
         it.setvar('url', url)
+        it.setvar('citekey', e.citekey)
         it.setvar('id', e.id)
 
         # ------------------------------------------------------------------
@@ -222,16 +224,17 @@ def do_search(query):
         else:
             mod = it.add_modifier('shift', 'No attachments', valid=False)
 
-        # Override with copy-citekey action given COPY_CITEKEY_MOD
-        if COPY_CITEKEY_MOD == '-':
-            it.setvar('action', 'copy-citekey')
-        elif COPY_CITEKEY_MOD in ['alt', 'cmd', 'ctrl', 'fn', 'shift']:
-            action = 'Paste' if AUTOPASTE else 'Copy'
-            mod = it.add_modifier(COPY_CITEKEY_MOD, u'%s cite-key' % action)
-            mod.setvar('action', 'copy-citekey')
-        elif len(COPY_CITEKEY_MOD) > 0:
-            log.warning('COPY_CITEKEY_MOD should be one of \
-                -, alt, cmd, ctrl, fn, shift, or empty')
+        if e.citekey:
+            # Override with copy-citekey action given COPY_CITEKEY_MOD
+            if COPY_CITEKEY_MOD == '-':
+                it.setvar('action', 'copy-citekey')
+            elif COPY_CITEKEY_MOD in ['alt', 'cmd', 'ctrl', 'fn', 'shift']:
+                action = 'Paste' if AUTOPASTE else 'Copy'
+                mod = it.add_modifier(COPY_CITEKEY_MOD, action + u' cite-key')
+                mod.setvar('action', 'copy-citekey')
+            elif COPY_CITEKEY_MOD:
+                log.warning('COPY_CITEKEY_MOD should be one of '
+                            '-, alt, cmd, ctrl, fn, shift, or empty')
 
     wf.send_feedback()
 
@@ -631,12 +634,18 @@ def do_notify(title, text):
     notify(title, text)
 
 
-def do_citekey(datadir, url, paste=False):
-    from zothero.betterbibtex import BetterBibTex
+def do_citekey(citekey, paste=False):
+    """Copy Better Bibtext citekey.
+
+    Args:
+        citekey (unicode): Item's Better Bibtex citekey.
+        paste (bool, optional): Paste citekey into active application.
+
+    """
+    log.debug('[citekey] key=%r, paste=%r', citekey, paste)
     import pasteboard as pb
-    val = BetterBibTex(datadir).search(url)
     pbdata = {
-        pb.UTI_PLAIN: val,
+        pb.UTI_PLAIN: citekey,
     }
     pb.set(pbdata)
 
@@ -686,6 +695,9 @@ def main(wf):
         return do_config(args['<query>'])
 
     if args['copy']:
+        if args['<citekey>']:
+            return do_citekey(args['<citekey>'], args['--paste'])
+
         return do_copy(args['<style>'], entry_id, args['--bibliography'],
                        args['--paste'])
 
@@ -709,9 +721,6 @@ def main(wf):
 
     if args['setvar']:
         return do_setvar(args['<key>'], args['<value>'])
-
-    if args['citekey']:
-        return do_citekey(datadir, args['<url>'], args['--paste'])
 
     raise ValueError('Unknown command')
 

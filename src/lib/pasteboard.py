@@ -14,7 +14,7 @@ from __future__ import print_function, absolute_import
 from AppKit import NSPasteboard
 from Foundation import NSData
 
-from workflow.util import run_jxa
+from workflow.util import run_trigger
 
 # Some common UTIs
 UTI_HTML = 'public.html'
@@ -75,4 +75,6 @@ def set(contents):
 
 def paste():
     """Simulate CMD+V to paste clipboard."""
-    run_jxa(PASTE_SCRIPT)
+    run_trigger('paste')
+    # This doesn't appear to work on Catalina :(
+    # run_jxa(PASTE_SCRIPT)
