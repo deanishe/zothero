@@ -268,11 +268,13 @@ def do_attachments(entry_id, query):
                         arg=att.path,
                         icon=att.path,
                         type='file',
+                        quicklookurl=att.path,
                         icontype='fileicon',
                         valid=True)
         elif att.url:
             wf.add_item(att.name, att.url,
                         arg=att.url,
+                        quicklookurl=att.url,
                         icon=ICON_WEB,
                         valid=True)
 
